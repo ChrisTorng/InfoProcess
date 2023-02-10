@@ -1,0 +1,25 @@
+#source {
+    width: 100%;
+}
+
+#history {
+}
+
+div[contenteditable="true"] {
+    border: 1px solid grey;
+    padding: 2px 4px;
+}
+
+.history_key {
+    margin-top: 3px;
+    float: left;
+}
+
+.history_value {
+    width: 90%;
+    float: right;
+}
+
+.clear {
+    clear: both;
+}
