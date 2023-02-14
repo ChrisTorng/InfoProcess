@@ -1,15 +1,36 @@
 const history = document.getElementById('history');
 const sourceElement = document.getElementById('source');
 
-quickSummary(sourceElement.value);
+//truncateForChat(sourceElement.value);
+//quickSummary(sourceElement.value);
+
+function truncateForChatBot(source) {
+    source = truncateOthers(source);
+    var records = source.split('\n\n');
+    for (var record in records) {
+        appendHistory(getTruncatedForChatRecord(records[record]));
+    }
+}
+
+function getTruncatedForChatRecord(record) {
+    var arr = record.split('\n');
+    var removed = arr.splice(3, 2);
+    var result = arr.join('\n');
+    return result;
+}
 
 function quickSummary(source) {
-    source = source.substring(source.indexOf('please-bird-mindfully') + 'please-bird-mindfully'.length + 2);
-    source = source.substring(0, source.indexOf('***********') - 2);
+    source = truncateOthers(source);
     var records = source.split('\n\n');
     for (var record in records) {
         appendHistory(getRecord(records[record]));
     }
+}
+
+function truncateOthers(source) {
+    source = source.substring(source.indexOf('please-bird-mindfully') + 'please-bird-mindfully'.length + 2);
+    source = source.substring(0, source.indexOf('***********') - 2);
+    return source;
 }
 
 function getRecord(record) {
@@ -24,15 +45,24 @@ function getRecord(record) {
         name = fullName.substring(0, fullName.lastIndexOf('(') - 1);
     }
 
-    var timeWithAuthor = lines[1].substring(lines[1].indexOf(':') - 2);
+    var timeWithAuthor = lines[1].substring(lines[1].indexOf(':') - 2).split(' by ');
+    var time = timeWithAuthor[0].replace(/^0+/g, '');;
+    var author = timeWithAuthor[1];
     var fullPlace = lines[2].substring(2);
     var place = fullPlace.lastIndexOf('(') > 0 ? fullPlace.substring(0, fullPlace.lastIndexOf('(')) : fullPlace;
+    place = place.replace(/[ ,A-Za-z]+$/i, ''); // remove trailing alphabets
+    place = place.replace(/\([ ,\-A-Za-z]+\)/i, ''); // remove (alphabets)
+    place = place.replace(/ *-. */i, '');
     var mapUrl = lines[3].substring(6);
     var recordUrl = lines[4].substring(8);
+
     var media = lines[5] && lines[5].indexOf('- 媒體: ') === 0 ? lines[5].substring(6, lines[5].length) : '';
     var commentLine = media ? 6 : 5;
     var comment = lines[commentLine] && lines[commentLine].indexOf('- 備註: "') === 0 ? lines[commentLine].substring(7, lines[commentLine].length - 1) : '';
-    var html = `<a href="${recordUrl}" target="_blank">${count}</a>: ${name} ${timeWithAuthor} <a href="${mapUrl}" target="_blank">${place}</a> ${media} ${comment}`;
+    var extraLine = media || comment ? `<br/>${media} ${comment}` : '';
+
+    var html = `${count} ${name} <a href="${recordUrl}" target="_blank">${time}</a> ${author}<br/>` +
+        `<a href="${mapUrl}" target="_blank">${place}</a> ${extraLine}`;
     return html;
 }
 
