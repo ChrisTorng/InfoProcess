@@ -51,8 +51,9 @@ function getRecord(record) {
     var fullPlace = lines[2].substring(2);
     var place = fullPlace.lastIndexOf('(') > 0 ? fullPlace.substring(0, fullPlace.lastIndexOf('(')) : fullPlace;
     place = place.replace(/[ ,A-Za-z]+$/i, ''); // remove trailing alphabets
-    place = place.replace(/\([ ,\-A-Za-z]+\)/i, ''); // remove (alphabets)
-    place = place.replace(/ *-. */i, '');
+    place = place.replace(/\([ ,\-A-Za-z]+\)/i, ''); // remove middle (alphabets)
+    place = place.replace(/[ -]*/i, ''); // remove - and spaces
+    place = place.replace(/^Auto selected /i, ''); // remove beginning "Auto selected "
     var mapUrl = lines[3].substring(6);
     var recordUrl = lines[4].substring(8);
 
