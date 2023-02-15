@@ -4,6 +4,10 @@ const sourceElement = document.getElementById('source');
 //truncateForChat(sourceElement.value);
 //quickSummary(sourceElement.value);
 
+async function getClipboardText () {
+    return await navigator.clipboard.readText();
+}
+
 function truncateForChatBot(source) {
     clearHistory();
     source = truncateOthers(source);
