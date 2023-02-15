@@ -5,6 +5,7 @@ const sourceElement = document.getElementById('source');
 //quickSummary(sourceElement.value);
 
 function truncateForChatBot(source) {
+    clearHistory();
     source = truncateOthers(source);
     var records = source.split('\n\n');
     for (var record in records) {
@@ -20,6 +21,7 @@ function getTruncatedForChatRecord(record) {
 }
 
 function quickSummary(source) {
+    clearHistory();
     source = truncateOthers(source);
     var records = source.split('\n\n');
     for (var record in records) {
@@ -52,7 +54,7 @@ function getRecord(record) {
     var place = fullPlace.lastIndexOf('(') > 0 ? fullPlace.substring(0, fullPlace.lastIndexOf('(')) : fullPlace;
     place = place.replace(/[ ,A-Za-z]+$/i, ''); // remove trailing alphabets
     place = place.replace(/\([ ,\-A-Za-z]+\)/i, ''); // remove middle (alphabets)
-    place = place.replace(/[ -]*/i, ''); // remove - and spaces
+    place = place.replace(/[ -,]*/g, ''); // remove - and spaces
     place = place.replace(/^Auto selected /i, ''); // remove beginning "Auto selected "
     var mapUrl = lines[3].substring(6);
     var recordUrl = lines[4].substring(8);
@@ -62,13 +64,17 @@ function getRecord(record) {
     var comment = lines[commentLine] && lines[commentLine].indexOf('- 備註: "') === 0 ? lines[commentLine].substring(7, lines[commentLine].length - 1) : '';
     var extraLine = media || comment ? `<br/>${media} ${comment}` : '';
 
-    var html = `${count} ${name} <a href="${recordUrl}" target="_blank">${time}</a> ${author}<br/>` +
-        `<a href="${mapUrl}" target="_blank">${place}</a> ${extraLine}`;
+    var html = `${count} <span title="${fullName}">${name}</span> <a href="${recordUrl}" target="_blank">${time}</a> ${author}<br/>` +
+        `<a href="${mapUrl}" target="_blank" title="${fullPlace}">${place}</a> ${extraLine}`;
     return html;
 }
 
 function getUrlWithoutSearch(url) {
     return url.href.replace(url.search, '');
+}
+
+function clearHistory() {
+    history.innerHTML = '';
 }
 
 function appendHistory(message) {
