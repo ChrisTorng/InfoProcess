@@ -52,10 +52,10 @@ function getRecord(record) {
     var author = timeWithAuthor[1];
     var fullPlace = lines[2].substring(2);
     var place = fullPlace.lastIndexOf('(') > 0 ? fullPlace.substring(0, fullPlace.lastIndexOf('(')) : fullPlace;
-    place = place.replace(/[ ,A-Za-z]+$/i, ''); // remove trailing alphabets
-    place = place.replace(/\([ ,\-A-Za-z]+\)/i, ''); // remove middle (alphabets)
+    place = place.replace(/[ ,a-z]+$/i, ''); // remove trailing alphabets
+    place = place.replace(/\([ ,\-a-z]+\)/i, ''); // remove middle (alphabets)
     place = place.replace(/[ -,]*/g, ''); // remove - and spaces
-    place = place.replace(/^Auto selected /i, ''); // remove beginning "Auto selected "
+    place = place.replace(/^[a-z]*/i, ''); // remove beginning "Auto selected"/TW...    
     var mapUrl = lines[3].substring(6);
     var recordUrl = lines[4].substring(8);
 
