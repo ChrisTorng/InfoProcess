@@ -84,10 +84,10 @@ https://ebird.org/alerts
 eBird鳥訊快報提供你關注地區的近期稀有鳥種或你所需鳥種的紀錄報告，包含已接受與尚未審閱的觀察紀錄。 某些紀錄可能來自私人土地或禁止進入區域。請各位注意並遵守相關規定。更多資訊請參閱使用條款：https://www.birds.cornell.edu/home/terms-of-use/
     
     -->
-    <textarea id="source" autofocus></textarea>
-    <br />
-    <button onclick="quickSummary(sourceElement.value)">Quick Summary</button>
-    <button onclick="truncateForChatBot(sourceElement.value)">Truncate for Chat Bot</button>
+    <!-- <textarea id="source" autofocus></textarea>
+    <br /> -->
+    <button onclick="async () => { quickSummary(await getClipboardText());}">Quick Summary</button>
+    <button onclick="async () => { truncateForChatBot(await getClipboardText());}">Truncate for Chat Bot</button>
     <div id="history"></div>
     <script src="Index.js"></script>
 </body>
