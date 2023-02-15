@@ -51,10 +51,11 @@ function getRecord(record) {
     var time = timeWithAuthor[0].replace(/^0+/g, '');;
     var author = timeWithAuthor[1];
     var fullPlace = lines[2].substring(2);
-    var place = fullPlace.lastIndexOf('(') > 0 ? fullPlace.substring(0, fullPlace.lastIndexOf('(')) : fullPlace;
+    var place = fullPlace.replace(/\([a-z\- ]*\)/i, ''); // remove (English place)
+    place = place.replace(/\(\d+.\d+, \d+.\d+\)/, ''); // remove position (25.033, 121.525)
     place = place.replace(/[ ,a-z]+$/i, ''); // remove trailing alphabets
-    place = place.replace(/\([ ,\-a-z]+\)/i, ''); // remove middle (alphabets)
-    place = place.replace(/[ -,]*/g, ''); // remove - and spaces
+    //place = place.replace(/\([ ,\-a-z]+\)/i, ''); // remove middle (alphabets)
+    place = place.replace(/[ ,\-]*/g, ''); // remove - and spaces
     place = place.replace(/^[a-z]*/i, ''); // remove beginning "Auto selected"/TW...    
     var mapUrl = lines[3].substring(6);
     var recordUrl = lines[4].substring(8);
