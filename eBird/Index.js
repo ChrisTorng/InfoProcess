@@ -1,10 +1,21 @@
 const history = document.getElementById('history');
 const sourceElement = document.getElementById('source');
 
+document.getElementById('quickSummary').onclick = async () => {
+    quickSummary(await getSourceOrClipboard());
+};
+document.getElementById('truncateForChatBot').onclick = async () => {
+    truncateForChatBot(await getSourceOrClipboard());
+};
+
 //truncateForChat(sourceElement.value);
 //quickSummary(sourceElement.value);
 
-async function getClipboardText () {
+async function getSourceOrClipboard() {
+    if (sourceElement.value) {
+        return sourceElement.value;
+    }
+
     return await navigator.clipboard.readText();
 }
 
@@ -36,6 +47,8 @@ function quickSummary(source) {
 function truncateOthers(source) {
     source = source.substring(source.indexOf('please-bird-mindfully') + 'please-bird-mindfully'.length + 2);
     source = source.substring(0, source.indexOf('***********') - 2);
+    source = source.replace(/\r\n/, '');
+    source = source.replace(/\r\n/g, '\n');
     return source;
 }
 
@@ -58,7 +71,7 @@ function getRecord(record) {
     var place = fullPlace.replace(/\([a-z\- ]*\)/i, ''); // remove (English place)
     place = place.replace(/\(\d+.\d+, \d+.\d+\)/, ''); // remove position (25.033, 121.525)
     place = place.replace(/[ ,a-z]+$/i, ''); // remove trailing alphabets
-    //place = place.replace(/\([ ,\-a-z]+\)/i, ''); // remove middle (alphabets)
+    place = place.replace(/\([ ,\-a-z]+\)/i, ''); // remove middle (alphabets)
     place = place.replace(/[ ,\-]*/g, ''); // remove - and spaces
     place = place.replace(/^[a-z]*/i, ''); // remove beginning "Auto selected"/TW...    
     var mapUrl = lines[3].substring(6);
@@ -67,10 +80,10 @@ function getRecord(record) {
     var media = lines[5] && lines[5].indexOf('- 媒體: ') === 0 ? lines[5].substring(6, lines[5].length) : '';
     var commentLine = media ? 6 : 5;
     var comment = lines[commentLine] && lines[commentLine].indexOf('- 備註: "') === 0 ? lines[commentLine].substring(7, lines[commentLine].length - 1) : '';
-    var extraLine = media || comment ? `<br/>${media} ${comment}` : '';
+    var commentWithBr = comment ? `<br/>${comment}` : '';
 
-    var html = `${count} <span title="${fullName}">${name}</span> <a href="${recordUrl}" target="_blank">${time}</a> ${author}<br/>` +
-        `<a href="${mapUrl}" target="_blank" title="${fullPlace}">${place}</a> ${extraLine}`;
+    var html = `${count} <span title="${fullName}">${name}</span> <a href="${recordUrl}" target="_blank">${time}</a> ${author} ${media}<br/>` +
+        `<a href="${mapUrl}" target="_blank" title="${fullPlace}">${place}</a>${commentWithBr}`;
     return html;
 }
 
