@@ -47,7 +47,7 @@ function quickSummary(source) {
 function truncateOthers(source) {
     source = source.substring(source.indexOf('please-bird-mindfully') + 'please-bird-mindfully'.length + 2);
     source = source.substring(0, source.indexOf('***********') - 2);
-    source = source.replace(/\r\n/, '');
+    source = source.replace(/\r\n/, ''); // remove beginning newline when get from clipboard
     source = source.replace(/\r\n/g, '\n');
     return source;
 }
