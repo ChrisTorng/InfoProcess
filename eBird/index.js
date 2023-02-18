@@ -4,9 +4,9 @@ const sourceElement = document.getElementById('source');
 document.getElementById('list').onclick = async () => {
     list(await getSourceOrClipboard());
 };
-document.getElementById('table').onclick = async () => {
-    table(await getSourceOrClipboard());
-};
+// document.getElementById('table').onclick = async () => {
+//     table(await getSourceOrClipboard());
+// };
 
 async function getSourceOrClipboard() {
     if (sourceElement.value) {
@@ -35,9 +35,9 @@ function getTruncatedForChatRecord(record) {
 function list(source) {
     clearHistory();
     source = truncateOthers(source);
-    var records = source.split('\n\n');
-    for (var record in records) {
-        appendHistory(getRecord(records[record]));
+    var recordsText = source.split('\n\n');
+    for (var recordIndex in recordsText) {
+        appendHistory(getListHtml(getRecord(recordsText[recordIndex])));
     }
 }
 
@@ -49,9 +49,9 @@ function truncateOthers(source) {
     return source;
 }
 
-function getRecord(record) {
-    console.log(record);
-    var lines = record.split('\n');
+function getRecord(recordText) {
+    console.log(recordText);
+    var lines = recordText.split('\n');
     var count = lines[0].substring(lines[0].lastIndexOf('(') + 1, lines[0].lastIndexOf(')'));
     var fullName = lines[0].substring(0, lines[0].lastIndexOf('('));
     var name = fullName.substring(0, fullName.lastIndexOf('(') - 1);
@@ -67,22 +67,39 @@ function getRecord(record) {
     var fullPlace = lines[2].substring(2);
     var place = fullPlace.replace(/\([a-z\- ]*\)/i, ''); // remove (English place)
     place = place.replace(/\(\d+.\d+, \d+.\d+\)/, ''); // remove position (25.033, 121.525)
-    place = place.replace(/[ ,a-z]+$/i, ''); // remove trailing alphabets
-    place = place.replace(/\([ ,\.\-a-z]+\)/i, ''); // remove middle (alphabets)
-    place = place.replace(/[ ,\-]*/g, ''); // remove - and spaces
+    place = place.replace(/[ ,'a-z]+$/i, ''); // remove trailing alphabets
+    place = place.replace(/\([\(\) ,\.\-\&'\da-z]+\)/i, ''); // remove middle (alphabets)
+    place = place.replace(/[ ,\-]*/g, ''); // remove - , and spaces
     place = place.replace(/^[a-z]*/i, ''); // remove beginning "Auto selected"/TW...    
     var mapUrl = lines[3].substring(6);
     var recordUrl = lines[4].substring(8);
 
     var media = lines[5] && lines[5].indexOf('- 媒體: ') === 0 ? lines[5].substring(6, lines[5].length) : '';
-    media = media.replace('Photo', '張');
+    media = media.substring(0, media.indexOf(' '));
     var commentLine = media ? 6 : 5;
     var comment = lines[commentLine] && lines[commentLine].indexOf('- 備註: "') === 0 ? lines[commentLine].substring(7, lines[commentLine].length - 1) : '';
-    var commentWithBr = comment ? `<br/>${comment}` : '';
 
-    var html = `${count} <span title="${fullName}">${name}</span> ${media} <a href="${recordUrl}" target="_blank">${time}</a> ${author}<br/>` +
-        `<a href="${mapUrl}" target="_blank" title="${fullPlace}">${place}</a>${commentWithBr}`;
-    return html;
+    return {
+        count,
+        fullName,
+        name,
+        time,
+        author,
+        fullPlace,
+        place,
+        mapUrl,
+        recordUrl,
+        media,
+        comment
+    };
+}
+
+function getListHtml(record) {
+    var commentWithBr = record.comment ? `<br/>${record.comment}` : '';
+    var media = record.media ? record.media + ' 張' : '';
+    return `${record.count} <span title="${record.fullName}">${record.name}</span> ${media} ` +
+        `<a href="${record.recordUrl}" target="_blank">${record.time}</a> ${record.author}<br/>` +
+        `<a href="${record.mapUrl}" target="_blank" title="${record.fullPlace}">${record.place}</a>${commentWithBr}`;
 }
 
 function getUrlWithoutSearch(url) {
