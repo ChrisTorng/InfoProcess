@@ -1,5 +1,5 @@
 # InfoProcess
 
-## eBird alert summary
+## eBird 鳥訊快報整理
 
-[eBird alert summary](https://christorng.github.io/InfoProcess/eBird)
+[eBird 鳥訊快報整理](https://christorng.github.io/InfoProcess/eBird)

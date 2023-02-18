@@ -7,13 +7,17 @@
     <link rel="stylesheet" href="index.css"/>
 </head>
 <body>
-    <h1>eBird 鳥訊快報整理</h1>
+    <h1>
+        eBird 鳥訊快報整理
+        <button id="list">條列</button>
+    </h1>
     <textarea id="source" autofocus></textarea>
-    <br />
-    <button id="quickSummary">簡報</button>
-    <button id="truncateForChatBot">由交談機器人整理</button>
-    支援由剪貼簿取得鳥訊快報，請設定永遠允許
-    <div id="history"></div>
+    <!-- <button id="table">表格</button> -->
+    <div id="history">
+        可複製全部鳥訊快報內容，貼入文字方塊。<br/>
+        另支援不需貼入，按按鈕直接由剪貼簿取得內容，可設定永遠允許權限。<br/>
+        滑鼠移至鳥種名或地點，會提示原始完整名稱。
+    </div>
     <script src="index.js"></script>
 </body>
 </html>

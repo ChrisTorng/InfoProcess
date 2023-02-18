@@ -1,15 +1,12 @@
 const history = document.getElementById('history');
 const sourceElement = document.getElementById('source');
 
-document.getElementById('quickSummary').onclick = async () => {
-    quickSummary(await getSourceOrClipboard());
+document.getElementById('list').onclick = async () => {
+    list(await getSourceOrClipboard());
 };
-document.getElementById('truncateForChatBot').onclick = async () => {
-    truncateForChatBot(await getSourceOrClipboard());
+document.getElementById('table').onclick = async () => {
+    table(await getSourceOrClipboard());
 };
-
-//truncateForChat(sourceElement.value);
-//quickSummary(sourceElement.value);
 
 async function getSourceOrClipboard() {
     if (sourceElement.value) {
@@ -19,7 +16,7 @@ async function getSourceOrClipboard() {
     return await navigator.clipboard.readText();
 }
 
-function truncateForChatBot(source) {
+function table(source) {
     clearHistory();
     source = truncateOthers(source);
     var records = source.split('\n\n');
@@ -35,7 +32,7 @@ function getTruncatedForChatRecord(record) {
     return result;
 }
 
-function quickSummary(source) {
+function list(source) {
     clearHistory();
     source = truncateOthers(source);
     var records = source.split('\n\n');
@@ -78,12 +75,12 @@ function getRecord(record) {
     var recordUrl = lines[4].substring(8);
 
     var media = lines[5] && lines[5].indexOf('- 媒體: ') === 0 ? lines[5].substring(6, lines[5].length) : '';
-    media.replace('Photo', '張');
+    media = media.replace('Photo', '張');
     var commentLine = media ? 6 : 5;
     var comment = lines[commentLine] && lines[commentLine].indexOf('- 備註: "') === 0 ? lines[commentLine].substring(7, lines[commentLine].length - 1) : '';
     var commentWithBr = comment ? `<br/>${comment}` : '';
 
-    var html = `${count} <span title="${fullName}">${name}</span> <a href="${recordUrl}" target="_blank">${time}</a> ${author} ${media}<br/>` +
+    var html = `${count} <span title="${fullName}">${name}</span> ${media} <a href="${recordUrl}" target="_blank">${time}</a> ${author}<br/>` +
         `<a href="${mapUrl}" target="_blank" title="${fullPlace}">${place}</a>${commentWithBr}`;
     return html;
 }
