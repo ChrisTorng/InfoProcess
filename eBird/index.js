@@ -71,13 +71,14 @@ function getRecord(record) {
     var place = fullPlace.replace(/\([a-z\- ]*\)/i, ''); // remove (English place)
     place = place.replace(/\(\d+.\d+, \d+.\d+\)/, ''); // remove position (25.033, 121.525)
     place = place.replace(/[ ,a-z]+$/i, ''); // remove trailing alphabets
-    place = place.replace(/\([ ,\-a-z]+\)/i, ''); // remove middle (alphabets)
+    place = place.replace(/\([ ,\.\-a-z]+\)/i, ''); // remove middle (alphabets)
     place = place.replace(/[ ,\-]*/g, ''); // remove - and spaces
     place = place.replace(/^[a-z]*/i, ''); // remove beginning "Auto selected"/TW...    
     var mapUrl = lines[3].substring(6);
     var recordUrl = lines[4].substring(8);
 
     var media = lines[5] && lines[5].indexOf('- 媒體: ') === 0 ? lines[5].substring(6, lines[5].length) : '';
+    media.replace('Photo', '張');
     var commentLine = media ? 6 : 5;
     var comment = lines[commentLine] && lines[commentLine].indexOf('- 備註: "') === 0 ? lines[commentLine].substring(7, lines[commentLine].length - 1) : '';
     var commentWithBr = comment ? `<br/>${comment}` : '';
