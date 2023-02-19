@@ -4,9 +4,9 @@ const sourceElement = document.getElementById('source');
 document.getElementById('list').onclick = async () => {
     list(await getSourceOrClipboard());
 };
-// document.getElementById('table').onclick = async () => {
-//     table(await getSourceOrClipboard());
-// };
+document.getElementById('table').onclick = async () => {
+    table(await getSourceOrClipboard());
+};
 
 async function getSourceOrClipboard() {
     if (sourceElement.value) {
@@ -20,17 +20,19 @@ function table(source) {
     clearHistory();
     source = truncateOthers(source);
     var records = source.split('\n\n');
-    for (var record in records) {
-        appendHistory(getTruncatedForChatRecord(records[record]));
+    outputTableHeader();
+    for (var recordIndex in recordsText) {
+        appendHistory(getTableHtml(getRecord(recordsText[recordIndex])));
     }
+    outputTableFooter();
 }
 
-function getTruncatedForChatRecord(record) {
-    var arr = record.split('\n');
-    var removed = arr.splice(3, 2);
-    var result = arr.join('\n');
-    return result;
-}
+// function getTruncatedForChatRecord(record) {
+//     var arr = record.split('\n');
+//     var removed = arr.splice(3, 2);
+//     var result = arr.join('\n');
+//     return result;
+// }
 
 function list(source) {
     clearHistory();
@@ -61,9 +63,9 @@ function getRecord(recordText) {
         name = fullName.substring(0, fullName.lastIndexOf('(') - 1);
     }
 
-    var timeWithAuthor = lines[1].substring(lines[1].indexOf(':') - 2).split(' by ');
-    var time = timeWithAuthor[0].replace(/^0+/g, '');;
-    var author = timeWithAuthor[1];
+    var timeWithReporter = lines[1].substring(lines[1].indexOf(':') - 2).split(' by ');
+    var time = timeWithReporter[0].replace(/^0+/g, '');;
+    var reporter = timeWithReporter[1];
     var fullPlace = lines[2].substring(2);
     var place = fullPlace.replace(/\([a-z\- ]*\)/i, ''); // remove (English place)
     place = place.replace(/\(\d+.\d+, \d+.\d+\)/, ''); // remove position (25.033, 121.525)
@@ -84,7 +86,7 @@ function getRecord(recordText) {
         fullName,
         name,
         time,
-        author,
+        reporter,
         fullPlace,
         place,
         mapUrl,
@@ -97,13 +99,14 @@ function getRecord(recordText) {
 function getListHtml(record) {
     var commentWithBr = record.comment ? `<br/>${record.comment}` : '';
     var media = record.media ? record.media + ' 張' : '';
-    return `${record.count} <span title="${record.fullName}">${record.name}</span> ${media} ` +
-        `<a href="${record.recordUrl}" target="_blank">${record.time}</a> ${record.author}<br/>` +
-        `<a href="${record.mapUrl}" target="_blank" title="${record.fullPlace}">${record.place}</a>${commentWithBr}`;
+    return `<p>${record.count} <span title="${record.fullName}">${record.name}</span> ${media} ` +
+        `<a href="${record.recordUrl}" target="_blank">${record.time}</a> ${record.reporter}<br/>` +
+        `<a href="${record.mapUrl}" target="_blank" title="${record.fullPlace}">${record.place}</a>` +
+        `${commentWithBr}</p>`;
 }
 
-function getUrlWithoutSearch(url) {
-    return url.href.replace(url.search, '');
+function outputTableHeader() {
+
 }
 
 function clearHistory() {
@@ -111,18 +114,5 @@ function clearHistory() {
 }
 
 function appendHistory(message) {
-    message = message.replace(/(\r|\n)/g, '<br/>');
-    history.innerHTML = `${history.innerHTML}<div class="clear"/><br/>${message}`;
-}
-
-function getFullHtml(value) {
-    return `<div contenteditable="true">${value}</div>`;
-}
-
-function getKeyHtml(key) {
-    return `<div class="history_key">${key}</div>`
-}
-
-function getValueHtml(value) {
-    return `<div contenteditable="true" class="history_value">${value}</div>`;
+    history.innerHTML = history.innerHTML + message;
 }
