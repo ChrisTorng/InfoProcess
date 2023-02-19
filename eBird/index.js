@@ -18,34 +18,34 @@ async function getSourceOrClipboard() {
 }
 
 // function getTruncatedForChatRecord(record) {
-//     var arr = record.split('\n');
-//     var removed = arr.splice(3, 2);
-//     var result = arr.join('\n');
+//     const arr = record.split('\n');
+//     const removed = arr.splice(3, 2);
+//     const result = arr.join('\n');
 //     return result;
 // }
 
 function list(source) {
     clearHistory();
-    let records = getRecords(source);
-    for (let record of records) {
+    const records = getRecords(source);
+    for (const record of records) {
         appendHistory(getListHtmlOrderByPlace(record));
     }
 }
 
 function table(source) {
     clearHistory();
-    let records = getRecords(source);
+    const records = getRecords(source);
     outputTable();
-    for (let record of records) {
+    for (const record of records) {
         addTableRow(record);
     }
 }
 
 function getRecords(source) {
     source = truncateOthers(source);
-    let recordsText = source.split('\n\n');
-    let records = [];
-    for (let recordText of recordsText) {
+    const recordsText = source.split('\n\n');
+    const records = [];
+    for (const recordText of recordsText) {
         records.push(getRecord(recordText));
     }
 
@@ -54,42 +54,45 @@ function getRecords(source) {
 }
 
 function truncateOthers(source) {
-    source = source.substring(source.indexOf('please-bird-mindfully') + 'please-bird-mindfully'.length + 2);
-    source = source.substring(0, source.indexOf('***********') - 2);
-    source = source.replace(/\r\n/, ''); // remove beginning newline when get from clipboard
-    source = source.replace(/\r\n/g, '\n');
-    return source;
+    source = source.substring(source.indexOf('please-bird-mindfully') + 'please-bird-mindfully'.length + 2)
+    return source.substring(0, source.indexOf('***********') - 2)
+        .replace(/\r\n/, '') // remove beginning newline when get from clipboard
+        .replace(/\r\n/g, '\n');
 }
 
 function getRecord(recordText) {
     console.log(recordText);
-    var lines = recordText.split('\n');
-    var count = lines[0].substring(lines[0].lastIndexOf('(') + 1, lines[0].lastIndexOf(')'));
-    var fullName = lines[0].substring(0, lines[0].lastIndexOf('('));
-    var name = fullName.substring(0, fullName.lastIndexOf('(') - 1);
+    const lines = recordText.split('\n');
+    let count = lines[0].substring(lines[0].lastIndexOf('(') + 1, lines[0].lastIndexOf(')'));
+    let fullName = lines[0].substring(0, lines[0].lastIndexOf('('));
+    let name = fullName.substring(0, fullName.lastIndexOf('(') - 1);
     if (!+count) {
         count = 'X';
         fullName = lines[0];
         name = fullName.substring(0, fullName.lastIndexOf('(') - 1);
     }
 
-    var timeWithReporter = lines[1].substring(lines[1].indexOf(':') - 2).split(' by ');
-    var time = timeWithReporter[0].replace(/^0+/g, '');;
-    var reporter = timeWithReporter[1];
-    var fullPlace = lines[2].substring(2);
-    var place = fullPlace.replace(/\([a-z\- ]*\)/i, ''); // remove (English place)
-    place = place.replace(/\(\d+.\d+, \d+.\d+\)/, ''); // remove position (25.033, 121.525)
-    place = place.replace(/[ ,'a-z]+$/i, ''); // remove trailing alphabets
-    place = place.replace(/\([\(\) ,\.\-\&'\da-z]+\)/i, ''); // remove middle (alphabets)
-    place = place.replace(/[ ,\-]*/g, ''); // remove - , and spaces
-    place = place.replace(/^[a-z]*/i, ''); // remove beginning "Auto selected"/TW...    
-    var mapUrl = lines[3].substring(6);
-    var recordUrl = lines[4].substring(8);
+    const timeWithReporter = lines[1].substring(lines[1].indexOf(':') - 2).split(' by ');
+    const time = timeWithReporter[0].replace(/^0+/g, '');;
+    const reporter = timeWithReporter[1];
+    const fullPlace = lines[2].substring(2);
+    const place = fullPlace.replace(/\([a-z\- ]*\)/i, '') // remove (English place)
+        .replace(/\(\d+.\d+, \d+.\d+\)/, '') // remove position (25.033, 121.525)
+        .replace(/[ ,'a-z]+$/i, '') // remove trailing alphabets
+        .replace(/\([\(\) ,\.\-\&'\da-z]+\)/i, '') // remove middle (alphabets)
+        .replace(/[ ,\-]*/g, '') // remove - , and spaces
+        .replace(/^[a-z]*/i, ''); // remove beginning "Auto selected"/TW...    
+    const mapUrl = lines[3].substring(6);
+    const recordUrl = lines[4].substring(8);
 
-    var media = lines[5] && lines[5].indexOf('- 媒體: ') === 0 ? lines[5].substring(6, lines[5].length) : '';
+    let media = (lines[5] && lines[5].indexOf('- 媒體: ') === 0 ?
+        lines[5].substring(6, lines[5].length) :
+        '');
     media = media.substring(0, media.indexOf(' '));
-    var commentLine = media ? 6 : 5;
-    var comment = lines[commentLine] && lines[commentLine].indexOf('- 備註: "') === 0 ? lines[commentLine].substring(7, lines[commentLine].length - 1) : '';
+    const commentLine = media ? 6 : 5;
+    const comment = lines[commentLine] && lines[commentLine].indexOf('- 備註: "') === 0 ?
+        lines[commentLine].substring(7, lines[commentLine].length - 1) :
+        '';
 
     return {
         count,
@@ -154,8 +157,8 @@ function addTableRow(record) {
         lastPlace = record.place;
     }
 
-    let birdsTable = document.getElementById('birdsTable');
-    let row = birdsTable.insertRow(-1);
+    const birdsTable = document.getElementById('birdsTable');
+    const row = birdsTable.insertRow(-1);
     row.innerHTML = `<tr>
     <td class="${placeDivider}">${placeText}</td>
     <td class="${placeDivider}">${record.count}</td>
