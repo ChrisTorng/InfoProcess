@@ -1,5 +1,6 @@
 const history = document.getElementById('history');
 const sourceElement = document.getElementById('source');
+let lastPlace;
 
 document.getElementById('list').onclick = async () => {
     list(await getSourceOrClipboard());
@@ -27,7 +28,7 @@ function list(source) {
     clearHistory();
     let records = getRecords(source);
     for (let record of records) {
-        appendHistory(getListHtml(record));
+        appendHistory(getListHtmlOrderByPlace(record));
     }
 }
 
@@ -47,6 +48,8 @@ function getRecords(source) {
     for (let recordText of recordsText) {
         records.push(getRecord(recordText));
     }
+
+    records.sort((record1, record2) => record1.place.localeCompare(record2.place));
     return records;
 }
 
@@ -104,24 +107,36 @@ function getRecord(recordText) {
 }
 
 function getListHtml(record) {
-    var commentWithBr = record.comment ? `<br/>${record.comment}` : '';
-    var media = record.media ? record.media + ' 張' : '';
+    const commentWithBr = record.comment ? `<br/>${record.comment}` : '';
+    const media = record.media ? record.media + ' 張' : '';
     return `<p>${record.count} <span title="${record.fullName}">${record.name}</span> ${media} 
 <a href="${record.recordUrl}" target="_blank">${record.time}</a> ${record.reporter}<br/>
 <a href="${record.mapUrl}" target="_blank" title="${record.fullPlace}">${record.place}</a>
 ${commentWithBr}</p>`;
 }
 
+function getListHtmlOrderByPlace(record) {
+    let placeText = '';
+    if (record.place !== lastPlace) {
+        placeText = `<br/><a href="${record.mapUrl}" target="_blank" title="${record.fullPlace}">${record.place}</a><br/>`;
+        lastPlace = record.place;
+    }
+
+    const media = record.media ? record.media + ' 張' : '';
+    return `${placeText}${record.count} <span title="${record.fullName}">${record.name}</span> ${media} 
+<a href="${record.recordUrl}" target="_blank">${record.time}</a> ${record.reporter} ${record.comment}<br/>`;
+}
+
 function outputTable() {
     appendHistory(`<table id="birdsTable">
     <thead>
         <tr>
+            <th title="原始地點完整名稱">地點</th>
             <th>數量</th>
             <th title="原始鳥種完整名稱">鳥種</th>
             <th>照片</th>
             <th>時間</th>
             <th>回報人</th>
-            <th title="原始地點完整名稱">地點</th>
             <th>備註</th>
         </tr>
     </thead>
@@ -131,21 +146,30 @@ function outputTable() {
 }
 
 function addTableRow(record) {
+    let placeText = '';
+    let placeDivider = '';
+    if (record.place !== lastPlace) {
+        placeText = `<a href="${record.mapUrl}" target="_blank" title="${record.fullPlace}">${record.place}</a>`;
+        placeDivider = 'placeDivider';
+        lastPlace = record.place;
+    }
+
     let birdsTable = document.getElementById('birdsTable');
     let row = birdsTable.insertRow(-1);
     row.innerHTML = `<tr>
-    <td>${record.count}</td>
-    <td title="${record.fullName}">${record.name}</td>
-    <td>${record.media}</td>
-    <td class="time"><a href="${record.recordUrl}" target="_blank">${record.time}</a></td>
-    <td>${record.reporter}</td>
-    <td><a href="${record.mapUrl}" target="_blank" title="${record.fullPlace}">${record.place}</a></td>
-    <td>${record.comment}</td>
+    <td class="${placeDivider}">${placeText}</td>
+    <td class="${placeDivider}">${record.count}</td>
+    <td class="${placeDivider}" title="${record.fullName}">${record.name}</td>
+    <td class="${placeDivider}">${record.media}</td>
+    <td class="${placeDivider} time"><a href="${record.recordUrl}" target="_blank">${record.time}</a></td>
+    <td class="${placeDivider}">${record.reporter}</td>
+    <td class="${placeDivider}">${record.comment}</td>
 </tr>`;
 }
 
 function clearHistory() {
     history.innerHTML = '';
+    lastPlace = '';
 }
 
 function appendHistory(message) {

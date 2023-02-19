@@ -30,11 +30,15 @@ div[contenteditable="true"] {
     clear: both;
 }
 
-th {
+ th {
     text-align: left;
-    border-bottom: 1px solid darkgray;
+    /* border-bottom: 1px solid darkgray; */
 }
 
 .time {
     text-align: right;
+}
+
+.placeDivider {
+    border-top: 1px solid darkgray;
 }
