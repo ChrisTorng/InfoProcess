@@ -19,12 +19,11 @@ async function getSourceOrClipboard() {
 function table(source) {
     clearHistory();
     source = truncateOthers(source);
-    var records = source.split('\n\n');
-    outputTableHeader();
-    for (var recordIndex in recordsText) {
-        appendHistory(getTableHtml(getRecord(recordsText[recordIndex])));
+    var recordsText = source.split('\n\n');
+    outputTable();
+    for (let recordText of recordsText) {
+        addTableRow(getRecord(recordText));
     }
-    outputTableFooter();
 }
 
 // function getTruncatedForChatRecord(record) {
@@ -38,8 +37,8 @@ function list(source) {
     clearHistory();
     source = truncateOthers(source);
     var recordsText = source.split('\n\n');
-    for (var recordIndex in recordsText) {
-        appendHistory(getListHtml(getRecord(recordsText[recordIndex])));
+    for (let recordText of recordsText) {
+        appendHistory(getListHtml(getRecord(recordText)));
     }
 }
 
@@ -99,14 +98,42 @@ function getRecord(recordText) {
 function getListHtml(record) {
     var commentWithBr = record.comment ? `<br/>${record.comment}` : '';
     var media = record.media ? record.media + ' 張' : '';
-    return `<p>${record.count} <span title="${record.fullName}">${record.name}</span> ${media} ` +
-        `<a href="${record.recordUrl}" target="_blank">${record.time}</a> ${record.reporter}<br/>` +
-        `<a href="${record.mapUrl}" target="_blank" title="${record.fullPlace}">${record.place}</a>` +
-        `${commentWithBr}</p>`;
+    return `<p>${record.count} <span title="${record.fullName}">${record.name}</span> ${media} 
+<a href="${record.recordUrl}" target="_blank">${record.time}</a> ${record.reporter}<br/>
+<a href="${record.mapUrl}" target="_blank" title="${record.fullPlace}">${record.place}</a>
+${commentWithBr}</p>`;
 }
 
-function outputTableHeader() {
+function outputTable() {
+    appendHistory(`<table id="birdsTable">
+    <thead>
+        <tr>
+            <th>數量</th>
+            <th title="原始鳥種完整名稱">鳥種</th>
+            <th>照片</th>
+            <th>時間</th>
+            <th>回報人</th>
+            <th title="原始地點完整名稱">地點</th>
+            <th>備註</th>
+        </tr>
+    </thead>
+    <tbody>
+    </tbody>
+</table>`);
+}
 
+function addTableRow(record) {
+    let birdsTable = document.getElementById('birdsTable');
+    let row = birdsTable.insertRow(-1);
+    row.innerHTML = `<tr>
+    <td>${record.count}</td>
+    <td title="${record.fullName}">${record.name}</td>
+    <td>${record.media}</td>
+    <td class="time"><a href="${record.recordUrl}" target="_blank">${record.time}</a></td>
+    <td>${record.reporter}</td>
+    <td><a href="${record.mapUrl}" target="_blank" title="${record.fullPlace}">${record.place}</a></td>
+    <td>${record.comment}</td>
+</tr>`;
 }
 
 function clearHistory() {
@@ -114,5 +141,6 @@ function clearHistory() {
 }
 
 function appendHistory(message) {
-    history.innerHTML = history.innerHTML + message;
+    history.innerHTML = `${history.innerHTML}
+${message}`;
 }

@@ -29,3 +29,12 @@ div[contenteditable="true"] {
 .clear {
     clear: both;
 }
+
+th {
+    text-align: left;
+    border-bottom: 1px solid darkgray;
+}
+
+.time {
+    text-align: right;
+}
