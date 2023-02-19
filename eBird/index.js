@@ -28,7 +28,7 @@ function list(source) {
     clearHistory();
     const records = getRecords(source);
     for (const record of records) {
-        appendHistory(getListHtmlOrderByPlace(record));
+        outputListHtmlOrderByPlace(record);
     }
 }
 
@@ -118,16 +118,31 @@ function getListHtml(record) {
 ${commentWithBr}</p>`;
 }
 
-function getListHtmlOrderByPlace(record) {
+function outputListTable() {
+    appendHistory(`<table>
+    <tbody>
+    </tbody>
+</table>`);
+}
+
+let lastTable;
+function outputListHtmlOrderByPlace(record) {
     let placeText = '';
     if (record.place !== lastPlace) {
-        placeText = `<br/><a href="${record.mapUrl}" target="_blank" title="${record.fullPlace}">${record.place}</a><br/>`;
+        appendHistory(`<br/><a href="${record.mapUrl}" target="_blank" title="${record.fullPlace}">${record.place}</a>`);
         lastPlace = record.place;
+        lastTable = document.createElement('table');
+        history.appendChild(lastTable);
     }
 
     const media = record.media ? record.media + ' 張' : '';
-    return `${placeText}${record.count} <span title="${record.fullName}">${record.name}</span> ${media} 
-<a href="${record.recordUrl}" target="_blank">${record.time}</a> ${record.reporter} ${record.comment}<br/>`;
+    const row = lastTable.insertRow(-1);
+    row.innerHTML = `<td>${record.count}</td>
+<td title="${record.fullName}">${record.name}</td>
+<td>${media}</td>
+<td class="time"><a href="${record.recordUrl}" target="_blank">${record.time}</a></td>
+<td>${record.reporter}</td>
+<td>${record.comment}</td>`;
 }
 
 function outputTable() {
