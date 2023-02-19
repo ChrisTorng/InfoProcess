@@ -16,16 +16,6 @@ async function getSourceOrClipboard() {
     return await navigator.clipboard.readText();
 }
 
-function table(source) {
-    clearHistory();
-    source = truncateOthers(source);
-    var recordsText = source.split('\n\n');
-    outputTable();
-    for (let recordText of recordsText) {
-        addTableRow(getRecord(recordText));
-    }
-}
-
 // function getTruncatedForChatRecord(record) {
 //     var arr = record.split('\n');
 //     var removed = arr.splice(3, 2);
@@ -35,11 +25,29 @@ function table(source) {
 
 function list(source) {
     clearHistory();
-    source = truncateOthers(source);
-    var recordsText = source.split('\n\n');
-    for (let recordText of recordsText) {
-        appendHistory(getListHtml(getRecord(recordText)));
+    let records = getRecords(source);
+    for (let record of records) {
+        appendHistory(getListHtml(record));
     }
+}
+
+function table(source) {
+    clearHistory();
+    let records = getRecords(source);
+    outputTable();
+    for (let record of records) {
+        addTableRow(record);
+    }
+}
+
+function getRecords(source) {
+    source = truncateOthers(source);
+    let recordsText = source.split('\n\n');
+    let records = [];
+    for (let recordText of recordsText) {
+        records.push(getRecord(recordText));
+    }
+    return records;
 }
 
 function truncateOthers(source) {
