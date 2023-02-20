@@ -71,6 +71,7 @@ function getRecord(recordText) {
         fullName = lines[0];
         name = fullName.substring(0, fullName.lastIndexOf('(') - 1);
     }
+    let confirmed = lines[0].indexOf('確認') >= 0;
 
     const timeWithReporter = lines[1].substring(lines[1].indexOf(':') - 2).split(' by ');
     const time = timeWithReporter[0].replace(/^0+/g, '');;
@@ -85,6 +86,7 @@ function getRecord(recordText) {
     const mapUrl = lines[3].substring(6);
     const recordUrl = lines[4].substring(8);
 
+    // 2 Videos, 17 Photos
     let media = (lines[5] && lines[5].indexOf('- 媒體: ') === 0 ?
         lines[5].substring(6, lines[5].length) :
         '');
@@ -98,6 +100,7 @@ function getRecord(recordText) {
         count,
         fullName,
         name,
+        confirmed,
         time,
         reporter,
         fullPlace,
@@ -139,9 +142,9 @@ function outputListHtmlOrderByPlace(record) {
     const row = lastTable.insertRow(-1);
     row.innerHTML = `<td>${record.count}</td>
 <td title="${record.fullName}">${record.name}</td>
-<td>${media}</td>
 <td class="time"><a href="${record.recordUrl}" target="_blank">${record.time}</a></td>
 <td>${record.reporter}</td>
+<td>${media}</td>
 <td>${record.comment}</td>`;
 }
 
@@ -152,9 +155,9 @@ function outputTable() {
             <th title="原始地點完整名稱">地點</th>
             <th>數量</th>
             <th title="原始鳥種完整名稱">鳥種</th>
-            <th>照片</th>
             <th>時間</th>
             <th>回報人</th>
+            <th>照片</th>
             <th>備註</th>
         </tr>
     </thead>
@@ -178,9 +181,9 @@ function addTableRow(record) {
     <td class="${placeDivider}">${placeText}</td>
     <td class="${placeDivider}">${record.count}</td>
     <td class="${placeDivider}" title="${record.fullName}">${record.name}</td>
-    <td class="${placeDivider}">${record.media}</td>
     <td class="${placeDivider} time"><a href="${record.recordUrl}" target="_blank">${record.time}</a></td>
     <td class="${placeDivider}">${record.reporter}</td>
+    <td class="${placeDivider}">${record.media}</td>
     <td class="${placeDivider}">${record.comment}</td>
 </tr>`;
 }
