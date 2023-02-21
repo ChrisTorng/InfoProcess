@@ -73,8 +73,30 @@ function getRecord(recordText) {
     }
     let confirmed = lines[0].indexOf('確認') >= 0;
 
-    const timeWithReporter = lines[1].substring(lines[1].indexOf(':') - 2).split(' by ');
-    const time = timeWithReporter[0].replace(/^0+/g, '');;
+    const timeWithReporter = lines[1].replace('- 回報 ', '').split(' by ');
+
+    let date;
+    if (timeWithReporter[0].indexOf(':') > 0) {
+        const dateTimeParser = /(\d+)月 (\d+), (\d+) (\d+):(\d+)/;
+        const dateMatch = timeWithReporter[0].match(dateTimeParser);
+        date = new Date(
+            dateMatch[3],  // year
+            dateMatch[1]-1,// monthIndex
+            dateMatch[2],  // day
+            dateMatch[4],  // hours
+            dateMatch[5]   // minutes
+        );
+    
+    } else {
+        const dateParser = /(\d+)月 (\d+), (\d+)/;
+        const dateMatch = timeWithReporter[0].match(dateParser);
+        date = new Date(
+            dateMatch[3],  // year
+            dateMatch[1]-1,  // monthIndex
+            dateMatch[2]  // day
+        );
+    }
+ 
     const reporter = timeWithReporter[1];
     const fullPlace = lines[2].substring(2);
     const place = fullPlace.replace(/\([a-z\- ]*\)/i, '') // remove (English place)
@@ -87,10 +109,25 @@ function getRecord(recordText) {
     const recordUrl = lines[4].substring(8);
 
     // 2 Videos, 17 Photos
-    let media = (lines[5] && lines[5].indexOf('- 媒體: ') === 0 ?
+    const media = (lines[5] && lines[5].indexOf('- 媒體: ') === 0 ?
         lines[5].substring(6, lines[5].length) :
         '');
-    media = media.substring(0, media.indexOf(' '));
+    
+    let videos = 0;
+    let photos = 0;
+    if (media) {
+        const medias = media.split(', ');
+        if (medias[0].indexOf(' Video')) {
+            videos = +medias[0].substring(0, medias[0].indexOf(' Video'));
+        }
+        if (medias[0].indexOf(' Photo')) {
+            photos = +medias[0].substring(0, medias[0].indexOf(' Photo'));
+        }
+        if (medias.length > 1 && medias[1].indexOf(' Photo')) {
+            photos = +medias[1].substring(0, medias[1].indexOf(' Photo'));
+        }
+    }
+
     const commentLine = media ? 6 : 5;
     const comment = lines[commentLine] && lines[commentLine].indexOf('- 備註: "') === 0 ?
         lines[commentLine].substring(7, lines[commentLine].length - 1) :
@@ -101,22 +138,46 @@ function getRecord(recordText) {
         fullName,
         name,
         confirmed,
-        time,
+        date,
         reporter,
         fullPlace,
         place,
         mapUrl,
         recordUrl,
-        media,
+        videos,
+        photos,
         comment
     };
 }
 
+function getTimeHtml(date) {
+    if (date.getHours() === 0 && date.getMinutes() === 0) {
+        return `<span title="${getFullDateText(date)}">${getShortDateText(date)}</span>`
+    }
+    return `<span title="${getFullDateText(date)} ${getTimeText(date)}">${getTimeText(date)}</span>`
+}
+
+function getShortDateText(date) {
+    return `${date.getMonth() + 1}/${padTwoDigit(date.getDate())}`;
+}
+
+function getFullDateText(date) {
+    return `${date.getFullYear()}/${getShortDateText(date)}`;
+}
+
+function getTimeText(date) {
+    return `${date.getHours()}:${padTwoDigit(date.getMinutes())}`;
+}
+
+function padTwoDigit(number) {
+    return ('0' + number).slice(-2);
+}
+
 function getListHtml(record) {
     const commentWithBr = record.comment ? `<br/>${record.comment}` : '';
-    const media = record.media ? record.media + ' 張' : '';
+    const media = getMediaText(record.videos, record.photos);
     return `<p>${record.count} <span title="${record.fullName}">${record.name}</span> ${media} 
-<a href="${record.recordUrl}" target="_blank">${record.time}</a> ${record.reporter}<br/>
+<a href="${record.recordUrl}" target="_blank">${getTimeHtml(record.date)}</a> ${record.reporter}<br/>
 <a href="${record.mapUrl}" target="_blank" title="${record.fullPlace}">${record.place}</a>
 ${commentWithBr}</p>`;
 }
@@ -128,9 +189,21 @@ function outputListTable() {
 </table>`);
 }
 
+function getMediaHtml(videos, photos) {
+    if (videos === 0) {
+        if (photos === 0) {
+            return '';
+        }
+        return `<span title="${photos} 張照片">${photos} 張</span>`;
+    }
+    if (photos === 0) {
+        return `<span title="${videos} 部影片">${videos} 部</span>`;
+    }
+    return `<span title="${videos} 部影片 ${photos} 張照片">${videos} 部 ${photos} 張</span>`;
+}
+
 let lastTable;
 function outputListHtmlOrderByPlace(record) {
-    let placeText = '';
     if (record.place !== lastPlace) {
         appendHistory(`<br/><a href="${record.mapUrl}" target="_blank" title="${record.fullPlace}">${record.place}</a>`);
         lastPlace = record.place;
@@ -138,11 +211,11 @@ function outputListHtmlOrderByPlace(record) {
         history.appendChild(lastTable);
     }
 
-    const media = record.media ? record.media + ' 張' : '';
+    const media = getMediaHtml(record.videos, record.photos);
     const row = lastTable.insertRow(-1);
     row.innerHTML = `<td>${record.count}</td>
 <td title="${record.fullName}">${record.name}</td>
-<td class="time"><a href="${record.recordUrl}" target="_blank">${record.time}</a></td>
+<td class="time"><a href="${record.recordUrl}" target="_blank">${getTimeHtml(record.date)}</a></td>
 <td>${record.reporter}</td>
 <td>${media}</td>
 <td>${record.comment}</td>`;
@@ -157,7 +230,7 @@ function outputTable() {
             <th title="原始鳥種完整名稱">鳥種</th>
             <th>時間</th>
             <th>回報人</th>
-            <th>照片</th>
+            <th>媒體</th>
             <th>備註</th>
         </tr>
     </thead>
@@ -175,15 +248,16 @@ function addTableRow(record) {
         lastPlace = record.place;
     }
 
+    const media = getMediaHtml(record.videos, record.photos);
     const birdsTable = document.getElementById('birdsTable');
     const row = birdsTable.insertRow(-1);
     row.innerHTML = `<tr>
     <td class="${placeDivider}">${placeText}</td>
     <td class="${placeDivider}">${record.count}</td>
     <td class="${placeDivider}" title="${record.fullName}">${record.name}</td>
-    <td class="${placeDivider} time"><a href="${record.recordUrl}" target="_blank">${record.time}</a></td>
+    <td class="${placeDivider} time"><a href="${record.recordUrl}" target="_blank">${getTimeHtml(record.date)}</a></td>
     <td class="${placeDivider}">${record.reporter}</td>
-    <td class="${placeDivider}">${record.media}</td>
+    <td class="${placeDivider}">${media}</td>
     <td class="${placeDivider}">${record.comment}</td>
 </tr>`;
 }
