@@ -106,14 +106,19 @@ function getRecord(recordText) {
  
     const reporter = timeWithReporter[1];
     const fullPlace = lines[2].substring(2);
-    let place = fullPlace.replace(/\([a-z\- ]*\)/i, '') // remove (English place)
-        .replace(/\(\d+.\d+, \d+.\d+\)/, '') // remove position (25.033, 121.525)
-        .replace(/[ ,'a-z]+$/i, '') // remove trailing alphabets
-        .replace(/\([\(\) ,\.\-\&\/'\da-z]+\)/i, '') // remove middle (a-z0-9 (),.-&/')
-        .replace(/[ ,\-]*/g, '') // remove - , and spaces
-        .replace(/^[a-z]*/i, ''); // remove beginning "Auto selected"/TW...
-    if (!place) {
+    let place;
+    if (/^[^\p{Script=Han}]*$/u.test(fullPlace)) {
         place = fullPlace;
+    } else {
+        place = fullPlace.replace(/\([a-z\- ]*\)/i, '') // remove (English place)
+            .replace(/\(\d+.\d+, \d+.\d+\)/, '') // remove position (25.033, 121.525)
+            .replace(/[ ,'a-z]+$/i, '') // remove trailing alphabets
+            .replace(/\([\(\) ,\.\-\&\/'\da-z]+\)/i, '') // remove middle (a-z0-9 (),.-&/')
+            .replace(/[ ,\-]*/g, '') // remove - , and spaces
+            .replace(/^[a-z]*/i, ''); // remove beginning "Auto selected"/TW...
+        if (!place) {
+            place = fullPlace;
+        }
     }
 
     const mapUrl = lines[3].substring(6);
