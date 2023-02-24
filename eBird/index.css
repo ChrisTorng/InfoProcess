@@ -35,10 +35,15 @@ div[contenteditable="true"] {
     /* border-bottom: 1px solid darkgray; */
 }
 
-.time {
+.right-align {
     text-align: right;
 }
 
-.placeDivider {
+.break-long-word {
+    min-width: 100px;
+    word-break: break-word;
+}
+
+.place-divider {
     border-top: 1px solid darkgray;
 }

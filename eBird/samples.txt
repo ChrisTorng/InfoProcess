@@ -23,7 +23,7 @@
 eBird 鼓勵我們的使用者們安全、負責任且謹慎地進行賞鳥活動。請遵守健康主管機關的建議，尊重每個地方的旅遊限制。更多相關資訊： https://ebird.org/news/please-bird-mindfully
 
 鴻雁 (Anser cygnoides) (1)
-- 回報 2月 06, 2023 13:10 by Cedarsama Chen
+- 回報 2月 06, 2023 1:02 by Cedarsama Chen
 - 208新北市金山区美田里, New Taipei City
 - 地圖: http://maps.google.com/?ie=UTF8&t=p&z=13&q=25.2262865,121.6323847&ll=25.2262865,121.6323847
 - 紀錄清單: https://ebird.org/checklist/S127748578
@@ -37,7 +37,7 @@ eBird 鼓勵我們的使用者們安全、負責任且謹慎地進行賞鳥活�
 - 紀錄清單: https://ebird.org/checklist/S127982910
 - 備註: "來多日"
 
-灰斑鴴 (Pluvialis squatarola) (6)
+灰斑鴴 (Pluvialis squatarola) (16)
 - 回報 2月 08, 2023 16:42 by Ben Tsai
 - 台北--田寮洋濕地(Taipei--Tianliaoyang's Wetland), New Taipei City
 - 地圖: http://maps.google.com/?ie=UTF8&t=p&z=13&q=25.0996435,121.463964&ll=25.0996435,121.463964
@@ -64,6 +64,16 @@ eBird 鼓勵我們的使用者們安全、負責任且謹慎地進行賞鳥活�
 - 地圖: http://maps.google.com/?ie=UTF8&t=p&z=13&q=25.157005,121.404096&ll=25.157005,121.404096
 - 紀錄清單: https://ebird.org/checklist/S128297366
 - 媒體: 1 Video
+
+小啄木 (Yungipicus canicapillus) (1)
+- 回報 2月 20, 2023 12:50 by Boshou Lin
+- 桶後林道9.5-10K, New Taipei City
+- 地圖: http://maps.google.com/?ie=UTF8&t=p&z=13&q=24.843026,121.63112&ll=24.843026,121.63112
+- 紀錄清單: https://ebird.org/checklist/S129083009
+- 備註: "行號 1
+行號 2
+
+行號 4"
 
 ***********
 

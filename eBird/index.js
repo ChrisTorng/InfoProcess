@@ -1,6 +1,7 @@
 const history = document.getElementById('history');
 const sourceElement = document.getElementById('source');
-let lastPlace;
+const initialNotExistedPlace = 'initialNotExistedPlace';
+let lastPlace = initialNotExistedPlace;
 
 document.getElementById('list').onclick = async () => {
     list(await getSourceOrClipboard());
@@ -55,9 +56,15 @@ function getRecords(source) {
 
 function truncateOthers(source) {
     source = source.substring(source.indexOf('please-bird-mindfully') + 'please-bird-mindfully'.length + 2)
-    return source.substring(0, source.indexOf('***********') - 2)
+    source = source.substring(0, source.indexOf('***********') - 2)
         .replace(/\r\n/, '') // remove beginning newline when get from clipboard
         .replace(/\r\n/g, '\n');
+
+    // for comment's "", change new line chars into space to avoid record splitting error
+    source = source.replace(/"([^"]|\n)*"/g, (matched) => {
+        return matched.replace(/\n/g, ' ');
+    });
+    return source;
 }
 
 function getRecord(recordText) {
@@ -80,31 +87,35 @@ function getRecord(recordText) {
         const dateTimeParser = /(\d+)月 (\d+), (\d+) (\d+):(\d+)/;
         const dateMatch = timeWithReporter[0].match(dateTimeParser);
         date = new Date(
-            dateMatch[3],  // year
-            dateMatch[1]-1,// monthIndex
-            dateMatch[2],  // day
-            dateMatch[4],  // hours
-            dateMatch[5]   // minutes
+            dateMatch[3],   // year
+            dateMatch[1]-1, // monthIndex
+            dateMatch[2],   // day
+            dateMatch[4],   // hours
+            dateMatch[5]    // minutes
         );
     
     } else {
         const dateParser = /(\d+)月 (\d+), (\d+)/;
         const dateMatch = timeWithReporter[0].match(dateParser);
         date = new Date(
-            dateMatch[3],  // year
-            dateMatch[1]-1,  // monthIndex
-            dateMatch[2]  // day
+            dateMatch[3],   // year
+            dateMatch[1]-1, // monthIndex
+            dateMatch[2]    // day
         );
     }
  
     const reporter = timeWithReporter[1];
     const fullPlace = lines[2].substring(2);
-    const place = fullPlace.replace(/\([a-z\- ]*\)/i, '') // remove (English place)
+    let place = fullPlace.replace(/\([a-z\- ]*\)/i, '') // remove (English place)
         .replace(/\(\d+.\d+, \d+.\d+\)/, '') // remove position (25.033, 121.525)
         .replace(/[ ,'a-z]+$/i, '') // remove trailing alphabets
-        .replace(/\([\(\) ,\.\-\&'\da-z]+\)/i, '') // remove middle (alphabets)
+        .replace(/\([\(\) ,\.\-\&\/'\da-z]+\)/i, '') // remove middle (a-z0-9 (),.-&/')
         .replace(/[ ,\-]*/g, '') // remove - , and spaces
-        .replace(/^[a-z]*/i, ''); // remove beginning "Auto selected"/TW...    
+        .replace(/^[a-z]*/i, ''); // remove beginning "Auto selected"/TW...
+    if (!place) {
+        place = fullPlace;
+    }
+
     const mapUrl = lines[3].substring(6);
     const recordUrl = lines[4].substring(8);
 
@@ -158,7 +169,7 @@ function getTimeHtml(date) {
 }
 
 function getShortDateText(date) {
-    return `${date.getMonth() + 1}/${padTwoDigit(date.getDate())}`;
+    return `${date.getMonth() + 1}/${date.getDate()}`;
 }
 
 function getFullDateText(date) {
@@ -176,7 +187,8 @@ function padTwoDigit(number) {
 function getListHtml(record) {
     const commentWithBr = record.comment ? `<br/>${record.comment}` : '';
     const media = getMediaText(record.videos, record.photos);
-    return `<p>${record.count} <span title="${record.fullName}">${record.name}</span> ${media} 
+    return `<p>${record.count}
+<span title="${record.fullName} ${getConfirmedText(record.confirmed)}">${record.name} ${getConfirmedSymbol(record.confirmed)}</span> ${media} 
 <a href="${record.recordUrl}" target="_blank">${getTimeHtml(record.date)}</a> ${record.reporter}<br/>
 <a href="${record.mapUrl}" target="_blank" title="${record.fullPlace}">${record.place}</a>
 ${commentWithBr}</p>`;
@@ -202,10 +214,21 @@ function getMediaHtml(videos, photos) {
     return `<span title="${videos} 部影片 ${photos} 張照片">${videos} 部 ${photos} 張</span>`;
 }
 
+function getConfirmedSymbol(confirmed) {
+    return confirmed ? '✔' : '';
+}
+
+function getConfirmedText(confirmed) {
+    return confirmed ? '已確認' : '未確認';
+}
+
 let lastTable;
 function outputListHtmlOrderByPlace(record) {
     if (record.place !== lastPlace) {
-        appendHistory(`<br/><a href="${record.mapUrl}" target="_blank" title="${record.fullPlace}">${record.place}</a>`);
+        if (history.innerHTML) {
+            appendHistory('<br/>');
+        }
+        appendHistory(`<a class="break-long-word" href="${record.mapUrl}" target="_blank" title="${record.fullPlace}">${record.place}</a>`);
         lastPlace = record.place;
         lastTable = document.createElement('table');
         history.appendChild(lastTable);
@@ -213,9 +236,9 @@ function outputListHtmlOrderByPlace(record) {
 
     const media = getMediaHtml(record.videos, record.photos);
     const row = lastTable.insertRow(-1);
-    row.innerHTML = `<td>${record.count}</td>
-<td title="${record.fullName}">${record.name}</td>
-<td class="time"><a href="${record.recordUrl}" target="_blank">${getTimeHtml(record.date)}</a></td>
+    row.innerHTML = `<td class="right-align">${record.count}</td>
+<td title="${record.fullName} ${getConfirmedText(record.confirmed)}">${record.name} ${getConfirmedSymbol(record.confirmed)}</td>
+<td class="right-align"><a href="${record.recordUrl}" target="_blank">${getTimeHtml(record.date)}</a></td>
 <td>${record.reporter}</td>
 <td>${media}</td>
 <td>${record.comment}</td>`;
@@ -243,8 +266,8 @@ function addTableRow(record) {
     let placeText = '';
     let placeDivider = '';
     if (record.place !== lastPlace) {
-        placeText = `<a href="${record.mapUrl}" target="_blank" title="${record.fullPlace}">${record.place}</a>`;
-        placeDivider = 'placeDivider';
+        placeText = `<a class="break-long-word" href="${record.mapUrl}" target="_blank" title="${record.fullPlace}">${record.place}</a>`;
+        placeDivider = 'place-divider';
         lastPlace = record.place;
     }
 
@@ -253,9 +276,9 @@ function addTableRow(record) {
     const row = birdsTable.insertRow(-1);
     row.innerHTML = `<tr>
     <td class="${placeDivider}">${placeText}</td>
-    <td class="${placeDivider}">${record.count}</td>
-    <td class="${placeDivider}" title="${record.fullName}">${record.name}</td>
-    <td class="${placeDivider} time"><a href="${record.recordUrl}" target="_blank">${getTimeHtml(record.date)}</a></td>
+    <td class="${placeDivider} right-align">${record.count}</td>
+    <td class="${placeDivider}" title="${record.fullName} ${getConfirmedText(record.confirmed)}">${record.name} ${getConfirmedSymbol(record.confirmed)}</td>
+    <td class="${placeDivider} right-align"><a href="${record.recordUrl}" target="_blank">${getTimeHtml(record.date)}</a></td>
     <td class="${placeDivider}">${record.reporter}</td>
     <td class="${placeDivider}">${media}</td>
     <td class="${placeDivider}">${record.comment}</td>
@@ -264,7 +287,7 @@ function addTableRow(record) {
 
 function clearHistory() {
     history.innerHTML = '';
-    lastPlace = '';
+    lastPlace = initialNotExistedPlace;
 }
 
 function appendHistory(message) {
