@@ -40,7 +40,7 @@ div[contenteditable="true"] {
 }
 
 .break-long-word {
-    min-width: 100px;
+    min-width: 200px;
     word-break: break-word;
 }
 
