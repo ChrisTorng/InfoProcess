@@ -22,6 +22,19 @@
 
 eBird 鼓勵我們的使用者們安全、負責任且謹慎地進行賞鳥活動。請遵守健康主管機關的建議，尊重每個地方的旅遊限制。更多相關資訊： https://ebird.org/news/please-bird-mindfully
 
+大冠鷲 (Spilornis cheela) (1)
+- 回報 3月 08, 2023 08:59 by Rajatanan Prapatsorn
+- Loving Farm. (24.69561, 121.42188), Taoyuan City
+- 地圖: http://maps.google.com/?ie=UTF8&t=p&z=13&q=24.695612,121.421877&ll=24.695612,121.421877
+- 紀錄清單: https://ebird.org/checklist/S130433451
+
+白腹秧雞 (Amaurornis phoenicurus) (2)
+- 回報 3月 07, 2023 12:40 by Chaohung Lai
+- Auto selected 24.95067, 121.03112, Taoyuan City
+- 地圖: http://maps.google.com/?ie=UTF8&t=p&z=13&q=24.950673,121.031116&ll=24.950673,121.031116
+- 紀錄清單: https://ebird.org/checklist/S130363039
+- 備註: "Singing"
+
 鴻雁 (Anser cygnoides) (1)
 - 回報 2月 06, 2023 1:02 by Cedarsama Chen
 - 208新北市金山区美田里, New Taipei City
@@ -36,7 +49,7 @@ eBird 鼓勵我們的使用者們安全、負責任且謹慎地進行賞鳥活�
 - 地圖: http://maps.google.com/?ie=UTF8&t=p&z=13&q=25.0193121,121.923236&ll=25.0193121,121.923236
 - 紀錄清單: https://ebird.org/checklist/S127982910
 - 備註: "來多日"
-
+1
 灰斑鴴 (Pluvialis squatarola) (16)
 - 回報 2月 08, 2023 16:42 by Ben Tsai
 - 台北--田寮洋濕地(Taipei--Tianliaoyang's Wetland), New Taipei City

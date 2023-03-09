@@ -4,18 +4,41 @@ const initialNotExistedPlace = 'initialNotExistedPlace';
 let lastPlace = initialNotExistedPlace;
 
 document.getElementById('list').onclick = async () => {
-    list(await getSourceOrClipboard());
+    catchError(async () => list(await getSourceOrClipboard()));
 };
 document.getElementById('table').onclick = async () => {
-    table(await getSourceOrClipboard());
+    catchError(async () => table(await getSourceOrClipboard()));
 };
+
+async function catchError(func) {
+    try {
+        await func();
+    } catch (ex) {
+        clearHistory();
+        appendHistory(ex);
+    }
+}
 
 async function getSourceOrClipboard() {
     if (sourceElement.value) {
         return sourceElement.value;
     }
 
-    return await navigator.clipboard.readText();
+    checkClipboardRead();
+    try {
+        return await navigator.clipboard.readText();
+    } catch {
+        throw '請複製全部鳥訊快報內容，貼入上方文字方塊。或請允許讀取剪貼簿權限要求。';
+    }
+}
+
+async function checkClipboardRead() {
+    const permission = await navigator.permissions.query({
+        name: "clipboard-read",
+    });
+    if (permission.state === "denied") {
+        throw '請複製全部鳥訊快報內容，貼入上方文字方塊。或請允許讀取剪貼簿的權限要求。';
+    }
 }
 
 // function getTruncatedForChatRecord(record) {
