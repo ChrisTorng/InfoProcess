@@ -33,7 +33,7 @@ eBird 鼓勵我們的使用者們安全、負責任且謹慎地進行賞鳥活�
 - Auto selected 24.95067, 121.03112, Taoyuan City
 - 地圖: http://maps.google.com/?ie=UTF8&t=p&z=13&q=24.950673,121.031116&ll=24.950673,121.031116
 - 紀錄清單: https://ebird.org/checklist/S130363039
-- 備註: "Singing"
+- 備註: "<b>Singing</b>"
 
 鴻雁 (Anser cygnoides) (1)
 - 回報 2月 06, 2023 1:02 by Cedarsama Chen

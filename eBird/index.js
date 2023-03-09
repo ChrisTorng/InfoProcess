@@ -36,6 +36,7 @@ async function checkClipboardRead() {
     const permission = await navigator.permissions.query({
         name: "clipboard-read",
     });
+    console.log(permission.state);
     if (permission.state === "denied") {
         throw '請複製全部鳥訊快報內容，貼入上方文字方塊。或請允許讀取剪貼簿的權限要求。';
     }
