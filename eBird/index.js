@@ -38,21 +38,76 @@ async function getSourceOrClipboard() {
 //     return result;
 // }
 
-function list(source) {
+function displayHeaderAndGetRecord(source) {
     clearHistory();
-    const records = getRecords(source);
+    const title = extractTitle(source);
+    let titleDetail;
+    if (title) {
+        titleDetail = extractTitleDetail(source);
+    }
+
+    const alertUrl = extractAlertUrl(source);
+    if (title) {
+        appendHistory(`<a href='${alertUrl}' target='_blank' title='${titleDetail}'><b>${title}</b></a>`);
+    }
+
+    return getRecords(source);
+}
+
+function list(source) {
+    const records = displayHeaderAndGetRecord(source)
     for (const record of records) {
         outputListHtmlOrderByPlace(record);
     }
 }
 
 function table(source) {
-    clearHistory();
-    const records = getRecords(source);
+    const records = displayHeaderAndGetRecord(source)
     outputTable();
     for (const record of records) {
         addTableRow(record);
     }
+}
+
+function extractTitle(text) {
+    const startPos = text.indexOf('謝謝您的訂閱');
+    if (startPos < 0) {
+        return '';
+    }
+
+    const fullTitle = text.substring(startPos + 6, text.indexOf('.', startPos));
+    const frequency = fullTitle.substring(fullTitle.indexOf('<') + 1, fullTitle.indexOf('>'));
+
+    const needsPos = fullTitle.indexOf('需要');
+    if (needsPos > 0) {
+        const city = fullTitle.substring(needsPos + 2, fullTitle.indexOf('的鳥訊快報', needsPos));
+        return `${city} ${frequency} 鳥訊快報`;
+    }
+
+    const rarePos = fullTitle.indexOf('稀有鳥種快報');
+    if (rarePos > 0) {
+        const city = fullTitle.substring(fullTitle.indexOf('>') + 2, rarePos);
+        return `${city} ${frequency} 稀有鳥種快報`;
+    }
+
+    const restTitle = fullTitle.substring(fullTitle.indexOf(' '));
+    return `${frequency} ${restTitle} 鳥訊快報`;
+}
+
+function extractTitleDetail(text) {
+    const startPos = text.indexOf('.  ');
+    if (startPos > 0) {
+        return text.substring(startPos + 3, text.indexOf('。', startPos));
+    }
+    return '';
+}
+
+function extractAlertUrl(text) {
+    const startPos = text.indexOf('https://ebird.org/alert/summary?sid=');
+    if (startPos > 0) {
+        return text.substring(startPos, text.indexOf('\n', startPos));
+    }
+    return null;
 }
 
 function getRecords(source) {
