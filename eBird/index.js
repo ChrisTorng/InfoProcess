@@ -25,7 +25,7 @@ async function getSourceOrClipboard() {
     }
 
     try {
-        return await navigator.clipboard.readText();
+    return await navigator.clipboard.readText();
     } catch {
         throw '請複製全部鳥訊快報內容，貼入上方文字方塊。或請允許讀取剪貼簿權限要求。';
     }
@@ -80,6 +80,15 @@ function truncateOthers(source) {
     return source;
 }
 
+function makeChineseName(name) {
+    const chineseNamePattern = /\p{Script=Han}{1,2} \p{Script=Han}/u;
+    if (chineseNamePattern.test(name)) {
+        const nameParts = name.split(' ');
+        return nameParts[1] + nameParts[0];
+    }
+    return name;
+}
+
 function getRecord(recordText) {
     console.log(recordText);
     const lines = recordText.split('\n');
@@ -117,7 +126,7 @@ function getRecord(recordText) {
         );
     }
  
-    const reporter = timeWithReporter[1];
+    const reporter = makeChineseName(timeWithReporter[1]);
     const fullPlace = lines[2].substring(2);
     let place;
     if (/^[^\p{Script=Han}]*$/u.test(fullPlace)) {
