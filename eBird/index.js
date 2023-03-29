@@ -128,15 +128,15 @@ function truncateOthers(source) {
         .replace(/\r\n/, '') // remove beginning newline when get from clipboard
         .replace(/\r\n/g, '\n');
 
-    // for comment's "", change new line chars into space to avoid record splitting error
-    source = source.replace(/"([^"]|\n)*"/g, (matched) => {
-        return matched.replace(/\n/g, ' ');
+    // for comment's "", change new line chars into <br\> to avoid record splitting error
+    source = source.replace(/^- 備註: "[\s\S]*?"$/gm, (matched) => {
+        return matched.replace(/\n/g, '<br/>');
     });
     return source;
 }
 
 function makeChineseName(name) {
-    const chineseNamePattern = /\p{Script=Han}{1,2} \p{Script=Han}/u;
+    const chineseNamePattern = /^\p{Script=Han}{1,2} \p{Script=Han}$/u;
     if (chineseNamePattern.test(name)) {
         const nameParts = name.split(' ');
         return nameParts[1] + nameParts[0];
