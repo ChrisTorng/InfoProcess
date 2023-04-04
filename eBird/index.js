@@ -89,6 +89,11 @@ function extractTitle(text) {
         const city = fullTitle.substring(fullTitle.indexOf('>') + 2, rarePos);
         return `${city} ${frequency} 稀有鳥種快報`;
     }
+    const yearlyPos = fullTitle.indexOf('的當年度鳥訊快報');
+    if (yearlyPos > 0) {
+        const city = fullTitle.substring(fullTitle.indexOf('>') + 2, yearlyPos);
+        return `${city} ${frequency} 當年度鳥訊快報`;
+    }
 
     const restTitle = fullTitle.substring(fullTitle.indexOf(' '));
     return `${frequency} ${restTitle} 鳥訊快報`;
@@ -180,7 +185,7 @@ function getRecord(recordText) {
             dateMatch[2]    // day
         );
     }
- 
+
     const reporter = makeChineseName(timeWithReporter[1]);
     const fullPlace = lines[2].substring(2);
     let place;
