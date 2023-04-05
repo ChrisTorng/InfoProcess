@@ -252,7 +252,7 @@ function getTimeHtml(date) {
     if (date.getHours() === 0 && date.getMinutes() === 0) {
         return `<span title="${getFullDateText(date)}">${getShortDateText(date)}</span>`
     }
-    return `<span title="${getFullDateText(date)} ${getTimeText(date)}">${getTimeText(date)}</span>`
+    return `<span title="${getFullDateText(date)} ${getTimeText(date)}">${getShortDateText(date)} ${getTimeText(date)}</span>`
 }
 
 function getShortDateText(date) {
@@ -264,7 +264,7 @@ function getFullDateText(date) {
 }
 
 function getTimeText(date) {
-    return `${date.getHours()}:${padTwoDigit(date.getMinutes())}`;
+    return `${padTwoDigit(date.getHours())}:${padTwoDigit(date.getMinutes())}`;
 }
 
 function padTwoDigit(number) {
