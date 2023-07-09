@@ -248,6 +248,29 @@ function getRecord(recordText) {
     };
 }
 
+// Taichung City
+// Taipei City
+// Taitung County
+// Tainan City
+// Yilan County
+// Hualien County
+// Kinmen County
+// Nantou County
+// Pingtung County
+// Miaoli County
+// Taoyuan City
+// Kaohsiung City
+// Keelung City
+// Lienchiang County
+// Yunlin County
+// New Taipei City
+// Hsinchu City
+// Hsinchu County
+// Chiayi City
+// Chiayi County
+// Changhua County
+// Penghu County
+
 function getTimeHtml(date) {
     if (date.getHours() === 0 && date.getMinutes() === 0) {
         return `<span title="${getFullDateText(date)}">${getShortDateText(date)}</span>`

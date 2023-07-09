@@ -6,3 +6,9 @@
 
 ![清單](images/eBirdList.png)
 ![表格](images/eBirdTable.png)
+
+## [Clipboard to HTML](https://christorng.github.io/InfoProcess/Clipboard/)
+
+While using Outlook or other apps, they lack of good translation function.
+So you can copy anything, paste into this little tool to show them on the web page,
+then you can use browser's built-in translation function.

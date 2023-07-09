@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Clipboard to HTML</title>
+    </head>
+<body>
+
+<h2>Clipboard to HTML</h2>
+
+<div id="pasteArea" contenteditable style="border: 1px solid;"></div>
+
+<div id="htmlContent">
+    Paste your content directly (just press keyboard shortcut, or paste into the box),
+    it will show as HTML, then you can use browser's Translation function.<br/>
+    You can paste repeatedly.
+</div>
+
+<div><a href="https://github.com/ChrisTorng/InfoProcess/Clipboard" target="_blank">GitHub source</a>,
+    <a href="https://github.com/ChrisTorng/InfoProcess/issues" target="_blank">report issues</a>
+</div>
+
+<script>
+document.addEventListener('paste', function(e) {
+    e.preventDefault();
+    
+    var pastedContent = '';
+    console.log(e.clipboardData.types);
+    e.clipboardData.types.forEach(type => 
+        console.log(type, e.clipboardData.getData(type))
+    );
+
+    if (e.clipboardData.types.includes('text/html')) {
+        pastedContent = e.clipboardData.getData('text/html');
+    } else if (e.clipboardData.types.includes('text/plain')) {
+        pastedContent = e.clipboardData.getData('text/plain');
+    } else {
+        pastedContent = e.clipboardData.getData(e.clipboardData.types[0]);
+    }
+
+    document.getElementById('htmlContent').innerHTML = pastedContent;
+});
+</script>
+
+</body>
+</html>
