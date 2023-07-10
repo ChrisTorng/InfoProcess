@@ -1,44 +1,87 @@
 <!DOCTYPE html>
 <html>
     <head>
-        <title>Clipboard to HTML</title>
+        <title>Clipboard Viewer</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
     </head>
 <body>
 
-<h2>Clipboard to HTML</h2>
+<h2>Clipboard Viewer</h2>
 
 <div id="pasteArea" contenteditable style="border: 1px solid;"></div>
-
-<div id="htmlContent">
+<div id="typeList"></div>
+<div id="htmlContent" style="border-top: solid 1px gray; border-bottom: solid 1px gray;">
     Paste your content directly (just press keyboard shortcut, or paste into the box),
-    it will show as HTML, then you can use browser's Translation function.<br/>
-    You can paste repeatedly.
+    it will show all the data from the clipboard, then you can use browser's Translation function.<br/>
+    You can choose any format. You can paste repeatedly.
 </div>
 
-<div><a href="https://github.com/ChrisTorng/InfoProcess/Clipboard" target="_blank">GitHub source</a>,
+<div>
+    <a href="https://github.com/ChrisTorng/InfoProcess/Clipboard" target="_blank">GitHub source</a>,
     <a href="https://github.com/ChrisTorng/InfoProcess/issues" target="_blank">report issues</a>
 </div>
 
 <script>
+let dataMap = new Map();
+const typeList = document.getElementById('typeList');
+let typeListHtml = '';
+const htmlContent = document.getElementById('htmlContent');
 document.addEventListener('paste', function(e) {
     e.preventDefault();
     
-    var pastedContent = '';
-    console.log(e.clipboardData.types);
-    e.clipboardData.types.forEach(type => 
-        console.log(type, e.clipboardData.getData(type))
-    );
+    dataMap = new Map();
+    typeListHtml = '';
+    e.clipboardData.types.forEach(type => {
+        let data = e.clipboardData.getData(type);
+        if (type === 'text/plain') {
+            data = `<pre>${data}</pre>`;            
+        }
+        dataMap.set(type, data);
+        typeListHtml += `<a href="#${type}">${type}</a> | `;
+    });
 
-    if (e.clipboardData.types.includes('text/html')) {
-        pastedContent = e.clipboardData.getData('text/html');
-    } else if (e.clipboardData.types.includes('text/plain')) {
-        pastedContent = e.clipboardData.getData('text/plain');
-    } else {
-        pastedContent = e.clipboardData.getData(e.clipboardData.types[0]);
+    if (dataMap.size === 0) {
+        typeList.innerHTML = 'No data found in clipboard';
+        return;
     }
 
-    document.getElementById('htmlContent').innerHTML = pastedContent;
+    setType('text/html') || setType('text/plain')  || setType(dataMap.keys[0]);
+
 });
+function setType(type) {
+    if (!dataMap.has(type)) {
+        return false;
+    }
+
+    htmlContent.innerHTML = dataMap.get(type);
+    dataMap.keys().forEach(nowType => {
+        if (nowType === type) {
+            typeListHtml += `<a href="#${type}"><b>${type}</b></a> | `;
+        } else {
+            typeListHtml += `<a href="#${type}">${type}</a> | `;
+        }
+    });
+    typeListHtml = typeListHtml.substring(0, typeListHtml.length - 2);
+    typeList.innerHTML = typeListHtml;
+    return true;
+}
+
+window.addEventListener("hashchange", function(event) {
+    event.preventDefault();
+
+    const hash = window.location.hash.slice(1);
+    if (dataMap.size === 0 || !hash) {
+        return;
+    }
+
+    if (dataMap.has(hash)) {
+        htmlContent.innerHTML = dataMap.get(hash);
+        location = '#';
+    } else{
+        location = `#${dataMap.keys[0]}`;
+    }
+}, false);
+
 </script>
 
 </body>
