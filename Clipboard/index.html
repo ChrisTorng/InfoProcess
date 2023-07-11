@@ -8,16 +8,16 @@
 
 <h2>Clipboard Viewer</h2>
 
-<div id="pasteArea" contenteditable style="border: 1px solid;"></div>
+<div id="pasteArea" contenteditable style="border: 1px solid gray;"></div>
 <div id="typeList"></div>
 <div id="htmlContent" style="border-top: solid 1px gray; border-bottom: solid 1px gray;">
-    Paste your content directly (just press keyboard shortcut, or paste into the box),
-    it will show all the data from the clipboard, then you can use browser's Translation function.<br/>
-    You can choose any format. You can paste repeatedly.
+    You can simply paste your content directly into the box by using the keyboard shortcut
+    or paste into the box. It will display all the data from your clipboard.
+    You can then utilize the browser's Translation function to translate the content.
+    It supports various formats, and you can paste your content repeatedly as needed.
 </div>
-
 <div>
-    <a href="https://github.com/ChrisTorng/InfoProcess/Clipboard" target="_blank">GitHub source</a>,
+    <a href="https://github.com/ChrisTorng/InfoProcess/" target="_blank">GitHub source</a>,
     <a href="https://github.com/ChrisTorng/InfoProcess/issues" target="_blank">report issues</a>
 </div>
 
@@ -37,7 +37,6 @@ document.addEventListener('paste', function(e) {
             data = `<pre>${data}</pre>`;            
         }
         dataMap.set(type, data);
-        typeListHtml += `<a href="#${type}">${type}</a> | `;
     });
 
     if (dataMap.size === 0) {
@@ -46,23 +45,24 @@ document.addEventListener('paste', function(e) {
     }
 
     setType('text/html') || setType('text/plain')  || setType(dataMap.keys[0]);
-
 });
+
 function setType(type) {
     if (!dataMap.has(type)) {
         return false;
     }
 
     htmlContent.innerHTML = dataMap.get(type);
-    dataMap.keys().forEach(nowType => {
-        if (nowType === type) {
-            typeListHtml += `<a href="#${type}"><b>${type}</b></a> | `;
+    for (let key of dataMap.keys()) {
+        if (key === type) {
+            typeListHtml += `<a href="#${key}"><b>${key}</b></a> | `;
         } else {
-            typeListHtml += `<a href="#${type}">${type}</a> | `;
+            typeListHtml += `<a href="#${key}">${key}</a> | `;
         }
-    });
+    }
     typeListHtml = typeListHtml.substring(0, typeListHtml.length - 2);
     typeList.innerHTML = typeListHtml;
+    location = `#${type}`;
     return true;
 }
 
@@ -74,12 +74,8 @@ window.addEventListener("hashchange", function(event) {
         return;
     }
 
-    if (dataMap.has(hash)) {
-        htmlContent.innerHTML = dataMap.get(hash);
-        location = '#';
-    } else{
-        location = `#${dataMap.keys[0]}`;
-    }
+    typeListHtml = '';
+    setType(hash) || setType('text/html') || setType('text/plain')  || setType(dataMap.keys[0]);
 }, false);
 
 </script>
