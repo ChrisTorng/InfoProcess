@@ -7,8 +7,10 @@
 ![清單](images/eBirdList.png)
 ![表格](images/eBirdTable.png)
 
-## [Clipboard to HTML](https://christorng.github.io/InfoProcess/Clipboard/)
+## [Clipboard Viewer](https://christorng.github.io/InfoProcess/Clipboard/)
 
-While using Outlook or other apps, they lack of good translation function.
-So you can copy anything, paste into this little tool to show them on the web page,
-then you can use browser's built-in translation function.
+When using apps like Outlook, I noticed that they lack a good translation function.
+To address this, I created this tool.
+You can copy any text and paste it into this tool, which will display the content on a web page.
+From there, you can utilize the built-in translation function of your browser.
+Additionally, you can explore and view the various formats available in your clipboard.
