@@ -31,7 +31,6 @@
 
 <script>
 let dataMap = new Map();
-let typeListHtml = '';
 const typeList = document.getElementById('typeList');
 const htmlContent = document.getElementById('htmlContent');
 
@@ -39,7 +38,6 @@ document.addEventListener('paste', function(e) {
     e.preventDefault();
     
     dataMap = new Map();
-    typeListHtml = '';
     e.clipboardData.types.forEach(type => {
         let data = e.clipboardData.getData(type);
 
@@ -52,7 +50,8 @@ document.addEventListener('paste', function(e) {
             default:
                 try {
                     const jsonObj = JSON.parse(data);
-                    data = `<div class="pre">${replaceHtmlSpecialChars(JSON.stringify(jsonObj, null, 2))}</div>`;
+                    const jsonStr = JSON.stringify(jsonObj, null, 2);
+                    data = `<div class="pre">${replaceHtmlSpecialChars(jsonStr)}</div>`;
                 } catch { }
         }
 
@@ -69,11 +68,15 @@ document.addEventListener('paste', function(e) {
 });
 
 function replaceHtmlSpecialChars(str) {
-    return str.replace(/&/g, "&amp;")
-              .replace(/</g, "&lt;")
-              .replace(/>/g, "&gt;")
-              .replace(/"/g, "&quot;")
-              .replace(/'/g, "&apos;");
+    return str.replace(/&/g, '&amp;')
+              .replace(/</g, '&lt;')
+              .replace(/>/g, '&gt;')
+              .replace(/"/g, '&quot;')
+              .replace(/'/g, '&apos;');
+}
+
+function setDefaultTypes() {
+    return setType('text/html') || setType('text/plain') || setType(dataMap.keys().next().value);
 }
 
 function setType(type) {
@@ -82,6 +85,13 @@ function setType(type) {
     }
 
     htmlContent.innerHTML = dataMap.get(type);
+    typeList.innerHTML = buildTypeList(type);
+    location = `#${type}`;
+    return true;
+}
+
+function buildTypeList(type) {
+    let typeListHtml = '';
     for (let key of dataMap.keys()) {
         if (key === type) {
             typeListHtml += `<b>${key}</b> | `;
@@ -89,25 +99,17 @@ function setType(type) {
             typeListHtml += `<a href="#${key}">${key}</a> | `;
         }
     }
-    typeListHtml = typeListHtml.substring(0, typeListHtml.length - 2);
-    typeList.innerHTML = typeListHtml;
-    location = `#${type}`;
-    return true;
+    return typeListHtml.substring(0, typeListHtml.length - 2);
 }
 
-function setDefaultTypes() {
-    return setType('text/html') || setType('text/plain')  || setType(dataMap.keys().next().value);
-}
-
-window.addEventListener("hashchange", function(event) {
+window.addEventListener('hashchange', function(event) {
     event.preventDefault();
 
     if (dataMap.size === 0) {
-        history.pushState("", document.title, window.location.pathname + window.location.search);
+        history.pushState('', document.title, window.location.pathname + window.location.search);
         return;
     }
 
-    typeListHtml = '';
     const hash = window.location.hash.slice(1);
     setType(hash) || setDefaultTypes();
 }, false);
