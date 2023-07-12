@@ -31,9 +31,10 @@
 
 <script>
 let dataMap = new Map();
-const typeList = document.getElementById('typeList');
 let typeListHtml = '';
+const typeList = document.getElementById('typeList');
 const htmlContent = document.getElementById('htmlContent');
+
 document.addEventListener('paste', function(e) {
     e.preventDefault();
     
@@ -46,17 +47,12 @@ document.addEventListener('paste', function(e) {
             case 'text/html':
                 break;
             case 'text/plain':
-                data = data.replace(/&/g, "&amp;")
-                           .replace(/</g, "&lt;")
-                           .replace(/>/g, "&gt;")
-                           .replace(/"/g, "&quot;")
-                           .replace(/'/g, "&apos;");
-                data = `<div class="pre">${data}</div>`;
+                data = `<div class="pre">${replaceHtmlSpecialChars(data)}</div>`;
                 break;
             default:
                 try {
                     const jsonObj = JSON.parse(data);
-                    data = `<div class="pre">${JSON.stringify(jsonObj, null, 2)}</div>`;
+                    data = `<div class="pre">${replaceHtmlSpecialChars(JSON.stringify(jsonObj, null, 2))}</div>`;
                 } catch { }
         }
 
@@ -71,6 +67,14 @@ document.addEventListener('paste', function(e) {
 
     setDefaultTypes()
 });
+
+function replaceHtmlSpecialChars(str) {
+    return str.replace(/&/g, "&amp;")
+              .replace(/</g, "&lt;")
+              .replace(/>/g, "&gt;")
+              .replace(/"/g, "&quot;")
+              .replace(/'/g, "&apos;");
+}
 
 function setType(type) {
     if (!dataMap.has(type)) {
@@ -91,6 +95,10 @@ function setType(type) {
     return true;
 }
 
+function setDefaultTypes() {
+    return setType('text/html') || setType('text/plain')  || setType(dataMap.keys().next().value);
+}
+
 window.addEventListener("hashchange", function(event) {
     event.preventDefault();
 
@@ -103,10 +111,6 @@ window.addEventListener("hashchange", function(event) {
     const hash = window.location.hash.slice(1);
     setType(hash) || setDefaultTypes();
 }, false);
-
-function setDefaultTypes() {
-    return setType('text/html') || setType('text/plain')  || setType(dataMap.keys().next().value);
-}
 </script>
 
 </body>
