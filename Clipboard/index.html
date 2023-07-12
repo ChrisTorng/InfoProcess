@@ -4,7 +4,7 @@
         <title>Clipboard Viewer</title>
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <style>
-            pre {
+            .pre {
               white-space: pre-wrap;
             }
         </style>
@@ -41,9 +41,26 @@ document.addEventListener('paste', function(e) {
     typeListHtml = '';
     e.clipboardData.types.forEach(type => {
         let data = e.clipboardData.getData(type);
-        if (type === 'text/plain') {
-            data = `<pre>${data}</pre>`;            
+
+        switch (type) {
+            case 'text/html':
+                break;
+            case 'text/plain':
+                data = data.replace(/&/g, "&amp;")
+                           .replace(/</g, "&lt;")
+                           .replace(/>/g, "&gt;")
+                           .replace(/"/g, "&quot;")
+                           .replace(/'/g, "&apos;");
+                data = `<div class="pre">${data}</div>`;
+                break;
+            default:
+                try {
+                    const jsonObj = JSON.parse(data);
+                    data = `<div class="pre">${JSON.stringify(jsonObj, null, 2)}</div>`;
+                } catch { }
         }
+
+        console.log(type, data);
         dataMap.set(type, data);
     });
 
@@ -52,7 +69,7 @@ document.addEventListener('paste', function(e) {
         return;
     }
 
-    setType('text/html') || setType('text/plain')  || setType(dataMap.keys[0]);
+    setDefaultTypes()
 });
 
 function setType(type) {
@@ -63,7 +80,7 @@ function setType(type) {
     htmlContent.innerHTML = dataMap.get(type);
     for (let key of dataMap.keys()) {
         if (key === type) {
-            typeListHtml += `<a href="#${key}"><b>${key}</b></a> | `;
+            typeListHtml += `<b>${key}</b> | `;
         } else {
             typeListHtml += `<a href="#${key}">${key}</a> | `;
         }
@@ -77,15 +94,19 @@ function setType(type) {
 window.addEventListener("hashchange", function(event) {
     event.preventDefault();
 
-    const hash = window.location.hash.slice(1);
-    if (dataMap.size === 0 || !hash) {
+    if (dataMap.size === 0) {
+        history.pushState("", document.title, window.location.pathname + window.location.search);
         return;
     }
 
     typeListHtml = '';
-    setType(hash) || setType('text/html') || setType('text/plain')  || setType(dataMap.keys[0]);
+    const hash = window.location.hash.slice(1);
+    setType(hash) || setDefaultTypes();
 }, false);
 
+function setDefaultTypes() {
+    return setType('text/html') || setType('text/plain')  || setType(dataMap.keys().next().value);
+}
 </script>
 
 </body>
