@@ -15,6 +15,12 @@ document.getElementById('table').onclick = e => {
     }
 };
 
+document.getElementById('source').onpaste = e => {
+    e.preventDefault();
+    value = e.clipboardData.getData('text/plain');
+    catchError(() => run(value));
+};
+
 document.addEventListener('paste', e => {
     e.preventDefault();
     value = e.clipboardData.getData('text/plain');
