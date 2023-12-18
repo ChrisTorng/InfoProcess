@@ -2,32 +2,41 @@ const history = document.getElementById('history');
 const sourceElement = document.getElementById('source');
 const initialNotExistedPlace = 'initialNotExistedPlace';
 let lastPlace = initialNotExistedPlace;
+let value;
 
-document.getElementById('list').onclick = async () => {
-    catchError(async () => list(await getSourceOrClipboard()));
+document.getElementById('list').onclick = e => {
+    if (value) {
+        catchError(() => run(value));
+    }
 };
-document.getElementById('table').onclick = async () => {
-    catchError(async () => table(await getSourceOrClipboard()));
+document.getElementById('table').onclick = e => {
+    if (value) {
+        catchError(() => run(value));
+    }
 };
+
+document.addEventListener('paste', e => {
+    e.preventDefault();
+    value = e.clipboardData.getData('text/plain');
+    catchError(() => run(value));
+});
 
 async function catchError(func) {
     try {
-        await func();
+        func();
     } catch (ex) {
         clearHistory();
         appendHistory(ex);
     }
 }
 
-async function getSourceOrClipboard() {
-    if (sourceElement.value) {
-        return sourceElement.value;
+function run(value) {
+    const style = document.querySelector('input[name="style"]:checked');
+    if (style.id == "list") {
+        catchError(() => list(value));
     }
-
-    try {
-    return await navigator.clipboard.readText();
-    } catch {
-        throw '請複製全部鳥訊快報內容，貼入上方文字方塊。或請允許讀取剪貼簿權限要求。';
+    else if (style.id == "table") {
+        catchError(() => table(value));
     }
 }
 
