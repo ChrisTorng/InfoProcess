@@ -3,17 +3,36 @@ const sourceElement = document.getElementById('source');
 const initialNotExistedPlace = 'initialNotExistedPlace';
 let lastPlace = initialNotExistedPlace;
 let value;
+let getFromClipboard = false;
 
-document.getElementById('list').onclick = e => {
+document.getElementById('list').onclick = async e => {
+    if (getFromClipboard || !value) {
+        value = await getClipboard();
+        getFromClipboard = true;
+    }
+
     if (value) {
         catchError(() => run(value));
     }
 };
-document.getElementById('table').onclick = e => {
+document.getElementById('table').onclick = async e => {
+    if (getFromClipboard || !value) {
+        value = await getClipboard();
+        getFromClipboard = true;
+    }
+
     if (value) {
         catchError(() => run(value));
     }
 };
+
+async function getClipboard() {
+   try {
+        return await navigator.clipboard.readText();
+    } catch {
+        throw '請複製全部鳥訊快報內容，貼入上方文字方塊。或請允許讀取剪貼簿權限要求。';
+    }
+}
 
 document.getElementById('source').onpaste = e => {
     e.preventDefault();
