@@ -63,6 +63,11 @@ function run(value) {
     else if (style.id == "table") {
         catchError(() => table(value));
     }
+    scrollToTop();
+}
+
+function scrollToTop() {
+    window.scrollTo(0, 0);
 }
 
 // function getTruncatedForChatRecord(record) {
@@ -115,22 +120,51 @@ function extractTitle(text) {
     const needsPos = fullTitle.indexOf('需要');
     if (needsPos > 0) {
         const city = fullTitle.substring(needsPos + 2, fullTitle.indexOf('的鳥訊快報', needsPos));
-        return `${city} ${frequency} 鳥訊快報`;
+        return `${convertToChinesePlace(city)} ${frequency} 鳥訊快報`;
     }
 
     const rarePos = fullTitle.indexOf('稀有鳥種快報');
     if (rarePos > 0) {
         const city = fullTitle.substring(fullTitle.indexOf('>') + 2, rarePos);
-        return `${city} ${frequency} 稀有鳥種快報`;
+        return `${convertToChinesePlace(city)} ${frequency} 稀有鳥種快報`;
     }
     const yearlyPos = fullTitle.indexOf('的當年度鳥訊快報');
     if (yearlyPos > 0) {
         const city = fullTitle.substring(fullTitle.indexOf('>') + 2, yearlyPos);
-        return `${city} ${frequency} 當年度鳥訊快報`;
+        return `${convertToChinesePlace(city)} ${frequency} 當年度鳥訊快報`;
     }
 
     const restTitle = fullTitle.substring(fullTitle.indexOf(' '));
     return `${frequency} ${restTitle} 鳥訊快報`;
+}
+
+function convertToChinesePlace(place) {
+    const nameMap = {
+        "Keelung City": "基隆市",
+        "Taipei City": "臺北市",
+        "New Taipei City": "新北市",
+        "Taoyuan City": "桃園市",
+        "Hsinchu City": "新竹市",
+        "Hsinchu County": "新竹縣",
+        "Miaoli County": "苗栗縣",
+        "Taichung City": "臺中市",
+        "Changhua County": "彰化縣",
+        "Nantou County": "南投縣",
+        "Yunlin County": "雲林縣",
+        "Chiayi City": "嘉義市",
+        "Chiayi County": "嘉義縣",
+        "Tainan City": "臺南市",
+        "Kaohsiung City": "高雄市",
+        "Pingtung County": "屏東縣",
+        "Yilan County": "宜蘭縣",
+        "Hualien County": "花蓮縣",
+        "Taitung County": "臺東縣",
+        "Penghu County": "澎湖縣",
+        "Kinmen County": "金門縣",
+        "Lienchiang County": "連江縣"
+    };
+
+    return nameMap[place] || place;
 }
 
 function extractTitleDetail(text) {
@@ -282,34 +316,11 @@ function getRecord(recordText) {
     };
 }
 
-// Taichung City
-// Taipei City
-// Taitung County
-// Tainan City
-// Yilan County
-// Hualien County
-// Kinmen County
-// Nantou County
-// Pingtung County
-// Miaoli County
-// Taoyuan City
-// Kaohsiung City
-// Keelung City
-// Lienchiang County
-// Yunlin County
-// New Taipei City
-// Hsinchu City
-// Hsinchu County
-// Chiayi City
-// Chiayi County
-// Changhua County
-// Penghu County
-
 function getTimeHtml(date) {
     if (date.getHours() === 0 && date.getMinutes() === 0) {
         return `<span title="${getFullDateText(date)}">${getShortDateText(date)}</span>`
     }
-    return `<span title="${getFullDateText(date)} ${getTimeText(date)}">${getShortDateText(date)} ${getTimeText(date)}</span>`
+    return `<span title="${getFullDateText(date)} ${getTimeText(date)}">${getShortDateText(date)}&nbsp;${getTimeText(date)}</span>`
 }
 
 function getShortDateText(date) {
