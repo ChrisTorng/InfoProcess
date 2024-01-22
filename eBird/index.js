@@ -111,7 +111,7 @@ function table(source) {
 function extractTitle(text) {
     const startPos = text.indexOf('謝謝您的訂閱');
     if (startPos < 0) {
-        return '';
+        throw '目前剪貼簿內容格式不正確。請複製全部鳥訊快報內容，貼入上方文字方塊。或請允許讀取剪貼簿權限要求。';
     }
 
     const fullTitle = text.substring(startPos + 6, text.indexOf('.', startPos));
@@ -119,19 +119,22 @@ function extractTitle(text) {
 
     const needsPos = fullTitle.indexOf('需要');
     if (needsPos > 0) {
-        const city = fullTitle.substring(needsPos + 2, fullTitle.indexOf('的鳥訊快報', needsPos));
-        return `${convertToChinesePlace(city)} ${frequency} 鳥訊快報`;
+        const city = fullTitle.substring(needsPos + 2, fullTitle.indexOf('的鳥訊快報', needsPos)).trim();
+        const cityName = convertToChinesePlace(city);
+        return `${cityName} ${frequency} 鳥訊快報`;
     }
 
     const rarePos = fullTitle.indexOf('稀有鳥種快報');
     if (rarePos > 0) {
-        const city = fullTitle.substring(fullTitle.indexOf('>') + 2, rarePos);
-        return `${convertToChinesePlace(city)} ${frequency} 稀有鳥種快報`;
+        const city = fullTitle.substring(fullTitle.indexOf('>') + 2, rarePos).trim();
+        const cityName = convertToChinesePlace(city);
+        return `${cityName} ${frequency} 稀有鳥種快報`;
     }
     const yearlyPos = fullTitle.indexOf('的當年度鳥訊快報');
     if (yearlyPos > 0) {
-        const city = fullTitle.substring(fullTitle.indexOf('>') + 2, yearlyPos);
-        return `${convertToChinesePlace(city)} ${frequency} 當年度鳥訊快報`;
+        const city = fullTitle.substring(fullTitle.indexOf('>') + 2, yearlyPos).trim();
+        const cityName = convertToChinesePlace(city);
+        return `${cityName} ${frequency} 當年度鳥訊快報`;
     }
 
     const restTitle = fullTitle.substring(fullTitle.indexOf(' '));
