@@ -57,6 +57,10 @@ document.addEventListener('paste', function(e) {
 
         console.log(type, data);
         dataMap.set(type, data);
+
+        if (type === 'text/html') {
+            dataMap.set(`${type}_string`, `<div class="pre">${replaceHtmlSpecialChars(data)}</div>`);
+        }
     });
 
     if (dataMap.size === 0) {
