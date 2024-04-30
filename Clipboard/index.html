@@ -30,6 +30,7 @@
 </div>
 
 <script>
+let originalData;
 let dataMap = new Map();
 const typeList = document.getElementById('typeList');
 const htmlContent = document.getElementById('htmlContent');
@@ -37,14 +38,19 @@ const htmlContent = document.getElementById('htmlContent');
 document.addEventListener('paste', function(e) {
     e.preventDefault();
     
+    originalData = undefined;
     dataMap = new Map();
     e.clipboardData.types.forEach(type => {
-        let data = e.clipboardData.getData(type);
+        data = e.clipboardData.getData(type);
 
         switch (type) {
             case 'text/html':
+                if (!originalData) {
+                    originalData = data;
+                }
                 break;
             case 'text/plain':
+                originalData = data;
                 data = `<div class="pre">${replaceHtmlSpecialChars(data)}</div>`;
                 break;
             default:
@@ -57,6 +63,10 @@ document.addEventListener('paste', function(e) {
 
         console.log(type, data);
         dataMap.set(type, data);
+
+        if (type === 'text/html') {
+            dataMap.set(`${type}_string`, `<div class="pre">${replaceHtmlSpecialChars(data)}</div>`);
+        }
     });
 
     if (dataMap.size === 0) {
@@ -64,7 +74,7 @@ document.addEventListener('paste', function(e) {
         return;
     }
 
-    setDefaultTypes()
+    setDefaultTypes();
 });
 
 function replaceHtmlSpecialChars(str) {
@@ -99,6 +109,9 @@ function buildTypeList(type) {
             typeListHtml += `<a href="#${key}">${key}</a> | `;
         }
     }
+
+    typeListHtml += '<button onclick="copyAsHtmlAndPlainText()">Copy as HTML and plain text</button>'
+
     return typeListHtml.substring(0, typeListHtml.length - 2);
 }
 
@@ -113,6 +126,20 @@ window.addEventListener('hashchange', function(event) {
     const hash = window.location.hash.slice(1);
     setType(hash) || setDefaultTypes();
 }, false);
+
+function copyAsHtmlAndPlainText() {
+    copyTextAndHtml(originalData);
+}
+
+function copyTextAndHtml(html) {
+  return navigator.clipboard.write([
+    new ClipboardItem({
+      'text/plain': new Blob([html], { type: 'text/plain' }),
+      'text/html': new Blob([html], { type: 'text/html' })
+    })
+  ]);
+}
+
 </script>
 
 </body>
