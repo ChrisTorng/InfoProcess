@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="UTF-8">
+    <title>Quoted-Printable Decoder</title>
+</head>
+<body>
+    <h1>Quoted-Printable 解碼器</h1>
+    <textarea id="input" rows="10" cols="50" placeholder="請輸入 quoted-printable 編碼的文字..."></textarea><br>
+    <button onclick="decodeQP()">解碼</button>
+    <button onclick="copyToClipboard()">複製到剪貼簿</button>
+    <button onclick="saveToFile()">儲存為檔案</button>
+    <h2>解碼結果：</h2>
+    <div id="output" style="white-space: pre-wrap; border: 1px solid #ccc; padding: 10px;"></div>
+
+    <script src="quote-printable.js"></script>
+</body>
+</html>
