@@ -108,19 +108,29 @@ function table(source) {
     }
 }
 
-function extractTitle(text) {
-    const startPos = text.indexOf('謝謝您的訂閱');
-    if (startPos < 0) {
-        throw '目前剪貼簿內容格式不正確。請複製全部鳥訊快報內容，貼入上方文字方塊。或請允許讀取剪貼簿權限要求。';
+function getFullTitle(text) {
+    const startPos1 = text.indexOf('謝謝您訂閱');
+    if (startPos1 > 0) {
+        return text.substring(startPos1 + 5, text.indexOf('。', startPos1));
     }
 
-    const fullTitle = text.substring(startPos + 6, text.indexOf('.', startPos));
+    const startPos2 = text.indexOf('謝謝您的訂閱');
+    if (startPos2 > 0) {
+        return text.substring(startPos2 + 6, text.indexOf('.', startPos2));
+    }
+
+    throw '目前剪貼簿內容格式不正確。請複製全部鳥訊快報內容，貼入上方文字方塊。或請允許讀取剪貼簿權限要求。';
+}
+
+function extractTitle(text) {
+    const fullTitle = getFullTitle(text);
     const frequency = fullTitle.substring(fullTitle.indexOf('<') + 1, fullTitle.indexOf('>'));
 
     const needsPos = fullTitle.indexOf('需要');
     if (needsPos > 0) {
         const city = fullTitle.substring(needsPos + 2, fullTitle.indexOf('的鳥訊快報', needsPos)).trim();
         const cityName = convertToChinesePlace(city);
+        console.log(needsPos, city, cityName);
         return `${cityName} ${frequency} 鳥訊快報`;
     }
 
