@@ -20,7 +20,7 @@
             width: 100%;
             overflow: hidden;
             margin-bottom: 10px;
-            touch-action: none;
+            touch-action: pan-y;
         }
         .image-compare img {
             display: block;
@@ -47,9 +47,10 @@
             top: 0;
             bottom: 0;
             left: 50%;
-            width: 4px;
+            width: 4px; /* 恢復細的分隔線 */
             background: white;
             cursor: ew-resize;
+            touch-action: none;
         }
         .slider:before {
             content: "";
@@ -130,10 +131,13 @@
         const originalImg = document.querySelector('.overlay img');
 
         let isDown = false;
+        let startX;
+        let scrollLeft;
 
         // 鼠標事件
         slider.addEventListener('mousedown', (e) => {
             isDown = true;
+            startX = e.pageX - slider.offsetLeft;
             e.preventDefault();
         });
         document.addEventListener('mouseup', () => isDown = false);
@@ -142,12 +146,15 @@
         // 觸控事件
         slider.addEventListener('touchstart', (e) => {
             isDown = true;
+            startX = e.touches[0].pageX - slider.offsetLeft;
             e.preventDefault();
         });
-        document.addEventListener('touchend', () => isDown = false);
-        document.addEventListener('touchmove', (e) => {
-            if (isDown) e.preventDefault();
-            handleMove(e.touches[0]);
+        slider.addEventListener('touchend', () => isDown = false);
+        slider.addEventListener('touchmove', (e) => {
+            if (isDown) {
+                e.preventDefault();
+                handleMove(e.touches[0]);
+            }
         });
 
         function handleMove(e) {
