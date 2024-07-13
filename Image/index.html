@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>照片比較</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 10px;
+            background-color: #f0f0f0;
+        }
+        .container {
+            max-width: 100%;
+            margin: 0 auto;
+        }
+        .image-compare {
+            position: relative;
+            width: 100%;
+            overflow: hidden;
+            margin-bottom: 10px;
+            touch-action: none;
+        }
+        .image-compare img {
+            display: block;
+            width: 100%;
+            height: auto;
+        }
+        .image-compare .overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            height: 100%;
+            width: 50%;
+            overflow: hidden;
+        }
+        .image-compare .overlay img {
+            display: block;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            object-position: left;
+        }
+        .slider {
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            left: 50%;
+            width: 4px;
+            background: white;
+            cursor: ew-resize;
+        }
+        .slider:before {
+            content: "";
+            position: absolute;
+            width: 40px;
+            height: 40px;
+            background: white;
+            border-radius: 50%;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+        .thumbnails {
+            display: flex;
+            justify-content: flex-start;
+            margin-bottom: 10px;
+            flex-wrap: nowrap;
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+        }
+        .thumbnail {
+            flex: 0 0 auto;
+            margin-right: 5px;
+            text-align: center;
+            cursor: pointer;
+        }
+        .thumbnail img {
+            height: 60px;
+            width: auto;
+            max-width: none;
+        }
+        .thumbnail.active {
+            border: 2px solid #4CAF50;
+        }
+        .thumbnail:first-child {
+            cursor: default;
+            opacity: 0.7;
+        }
+        .thumbnail-title {
+            font-size: 10px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            max-width: 100px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="thumbnails" id="thumbnails"></div>
+        <div class="image-compare">
+            <img src="" alt="比較圖片">
+            <div class="overlay">
+                <img src="" alt="原始圖片">
+            </div>
+            <div class="slider"></div>
+        </div>
+    </div>
+
+    <script>
+        const images = [
+            {"url": "../images/Elementary/畢業紀念照.jpg", "title": "原始照片"},
+            {"url": "../images/Elementary/畢業紀念照高解析度.jpg", "title": "高解析度"},
+            {"url": "../images/Elementary/畢業紀念照 upscale.png", "title": "upscale"},
+            {"url": "../images/Elementary/畢業紀念照 supir upscale.png", "title": "supir upscale"},
+            {"url": "../images/Elementary/畢業紀念照 ReFocusV3 upscale.png", "title": "ReFocusV3upscale"},
+            {"url": "../images/Elementary/ComfyUI_temp_szaiv_00001_.png", "title": "1"},
+            {"url": "../images/Elementary/ComfyUI_temp_szaiv_00005_.png", "title": "5"},
+            {"url": "../images/Elementary/ComfyUI_temp_szaiv_00006_.png", "title": "6"},
+            {"url": "../images/Elementary/ComfyUI_temp_szaiv_00009_.png", "title": "9"},
+        ];
+
+        const slider = document.querySelector('.slider');
+        const overlay = document.querySelector('.overlay');
+        const container = document.querySelector('.image-compare');
+        const thumbnailsContainer = document.getElementById('thumbnails');
+        const compareImg = document.querySelector('.image-compare > img');
+        const originalImg = document.querySelector('.overlay img');
+
+        let isDown = false;
+
+        // 鼠標事件
+        slider.addEventListener('mousedown', (e) => {
+            isDown = true;
+            e.preventDefault();
+        });
+        document.addEventListener('mouseup', () => isDown = false);
+        document.addEventListener('mousemove', handleMove);
+
+        // 觸控事件
+        slider.addEventListener('touchstart', (e) => {
+            isDown = true;
+            e.preventDefault();
+        });
+        document.addEventListener('touchend', () => isDown = false);
+        document.addEventListener('touchmove', (e) => {
+            if (isDown) e.preventDefault();
+            handleMove(e.touches[0]);
+        });
+
+        function handleMove(e) {
+            if (!isDown) return;
+            const rect = container.getBoundingClientRect();
+            const x = (e.clientX || e.pageX) - rect.left;
+            const percent = Math.max(0, Math.min(100, x / rect.width * 100));
+            
+            overlay.style.width = `${percent}%`;
+            slider.style.left = `${percent}%`;
+        }
+
+        function renderThumbnails() {
+            thumbnailsContainer.innerHTML = '';
+            images.forEach((img, index) => {
+                const thumbnail = document.createElement('div');
+                thumbnail.className = 'thumbnail' + (index === 0 || index === 1 ? ' active' : '');
+                thumbnail.innerHTML = `
+                    <img src="${img.url}" alt="${img.title}">
+                    <div class="thumbnail-title">${img.title}</div>
+                `;
+                if (index > 0) {
+                    thumbnail.onclick = () => setCompareImage(index);
+                    thumbnail.ontouchend = (e) => {
+                        e.preventDefault();
+                        setCompareImage(index);
+                    };
+                }
+                thumbnailsContainer.appendChild(thumbnail);
+            });
+            originalImg.src = images[0].url;
+            compareImg.src = images[1].url;
+        }
+
+        function setCompareImage(index) {
+            compareImg.src = images[index].url;
+            document.querySelectorAll('.thumbnail').forEach((thumb, i) => {
+                thumb.classList.toggle('active', i === 0 || i === index);
+            });
+        }
+
+        // 頁面加載時自動渲染縮圖和載入圖片
+        window.onload = renderThumbnails;
+    </script>
+</body>
+</html>
