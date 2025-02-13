@@ -1,3 +1,11 @@
+function isVirtualKeyboard() {
+    return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+}
+
+if (isVirtualKeyboard()) {
+    document.getElementById('source').focus();
+}
+
 const history = document.getElementById('history');
 const sourceElement = document.getElementById('source');
 const initialNotExistedPlace = 'initialNotExistedPlace';
@@ -338,7 +346,7 @@ function getRecord(recordText) {
     }
 
     const commentLine = media ? 6 : 5;
-    const comment = lines[commentLine] && lines[commentLine].indexOf('- 備註: "') === 0 ?
+    const comment = lines[commentLine] && lines[commentLine].indexOf('- 備註: "') === 0 ? 
         lines[commentLine].substring(7, lines[commentLine].length - 1) :
         '';
 
