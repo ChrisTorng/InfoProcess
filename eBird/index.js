@@ -109,16 +109,22 @@ function table(source) {
 }
 
 function getFullTitle(text) {
-    const startPos1 = text.indexOf('謝謝您訂閱');
+    const startPos1 = text.indexOf('謝謝你訂閱');
     if (startPos1 > 0) {
         return text.substring(startPos1 + 5, text.indexOf('。', startPos1));
     }
 
-    const startPos2 = text.indexOf('謝謝您的訂閱');
+    const startPos2 = text.indexOf('謝謝您訂閱');
     if (startPos2 > 0) {
-        return text.substring(startPos2 + 6, text.indexOf('.', startPos2));
+        return text.substring(startPos2 + 5, text.indexOf('。', startPos2));
     }
 
+    const startPos3 = text.indexOf('謝謝您的訂閱');
+    if (startPos3 > 0) {
+        return text.substring(startPos3 + 6, text.indexOf('.', startPos3));
+    }
+
+    console.log("沒有 '謝謝你訂閱' 或 '謝謝您訂閱' 或 '謝謝您的訂閱'");
     throw '目前剪貼簿內容格式不正確。請複製全部鳥訊快報內容，貼入上方文字方塊。或請允許讀取剪貼簿權限要求。';
 }
 
