@@ -167,6 +167,7 @@ function extractTitle(text) {
 
 function convertToChinesePlace(place) {
     const nameMap = {
+        "Taiwan": "臺灣",
         "Keelung City": "基隆市",
         "Taipei City": "臺北市",
         "New Taipei City": "新北市",
