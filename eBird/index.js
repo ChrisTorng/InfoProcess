@@ -211,7 +211,31 @@ function getRecords(source) {
     }
 
     records.sort((record1, record2) => record1.place.localeCompare(record2.place));
-    return records;
+
+    // 合併僅有回報人不同的紀錄
+    const mergedRecords = [];
+    for (const record of records) {
+        const lastRecord = mergedRecords[mergedRecords.length - 1];
+        if (lastRecord && isMergeable(lastRecord, record)) {
+            lastRecord.reporter += `, <a href="${record.recordUrl}" target="_blank">${record.reporter}</a>`;
+        } else {
+            mergedRecords.push(record);
+        }
+    }
+
+    return mergedRecords;
+}
+
+function isMergeable(record1, record2) {
+    return record1.count === record2.count &&
+        record1.fullName === record2.fullName &&
+        record1.confirmed === record2.confirmed &&
+        record1.date.getTime() === record2.date.getTime() &&
+        record1.fullPlace === record2.fullPlace &&
+        record1.mapUrl === record2.mapUrl &&
+        record1.videos === record2.videos &&
+        record1.photos === record2.photos &&
+        record1.comment === record2.comment;
 }
 
 function truncateOthers(source) {
