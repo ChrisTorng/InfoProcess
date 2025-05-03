@@ -1,8 +1,8 @@
 # InfoProcess
 
-## [eBird 鳥訊快報整理](https://christorng.github.io/eBird/alerts/)
+## [eBird 鳥訊快報整理](https://e-bird-christorngs-projects.vercel.app/alerts/)
 
-**eBird 鳥訊快報整理 已移至 [這裡](https://christorng.github.io/eBird/alerts/)**  
+**eBird 鳥訊快報整理 已移至 [這裡](https://e-bird-christorngs-projects.vercel.app/alerts/)**  
 
 ## [Clipboard Viewer](https://christorng.github.io/InfoProcess/Clipboard/)
 
