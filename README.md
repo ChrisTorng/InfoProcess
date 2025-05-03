@@ -1,6 +1,6 @@
 # InfoProcess
 
-## [eBird 鳥訊快報整理](https://christorng.github.io/InfoProcess/eBird/)
+## [eBird 鳥訊快報整理](https://christorng.github.io/eBird/alerts/)
 
 **eBird 鳥訊快報整理 已移至 [這裡](https://christorng.github.io/eBird/alerts/)**  
 
@@ -15,3 +15,7 @@ When using applications like eMail or PDF viewers, they often lack a user-friend
 To address this issue, I have developed this small tool.
 You can paste any content into this tool, and it will display the content in a web page format, allowing you to directly use the translation function of your browser.
 Additionally, it lists all the available formats of the current clipboard data, enabling you to view content in different formats.
+
+## [Quoted-Printable 解碼器](https://christorng.github.io/InfoProcess/converter/quoted-printable/)
+
+## [照片比較](https://christorng.github.io/InfoProcess/Image/)
