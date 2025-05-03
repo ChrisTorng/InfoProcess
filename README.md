@@ -16,6 +16,6 @@ To address this issue, I have developed this small tool.
 You can paste any content into this tool, and it will display the content in a web page format, allowing you to directly use the translation function of your browser.
 Additionally, it lists all the available formats of the current clipboard data, enabling you to view content in different formats.
 
-## [Quoted-Printable 解碼器](https://christorng.github.io/InfoProcess/converter/quoted-printable/)
+## [Quoted-Printable 解碼器](https://christorng.github.io/InfoProcess/converter/quoted-printable.html)
 
 ## [照片比較](https://christorng.github.io/InfoProcess/Image/)
